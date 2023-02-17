@@ -1,6 +1,8 @@
 # tissue_image_analysis
 Created 04/02/2023 by Natasha Cowley.
 
+This is the cleanned up analysis code currently only for manual traces. Development of the image analysis algorithm to work with cellpose traces is ongoing.
+
 ## Setup and Running:
 
 For this itteration of the code we need traces with spider legs and dots (nuclei).
