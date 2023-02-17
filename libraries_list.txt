@@ -1,0 +1,14 @@
+List of required python libraries:
+
+numpy
+matplotlib
+scipy
+pandas
+glob
+os
+opencv-python (cv2)
+scikit-image (skimage)
+tifffile
+mahotas
+trackpy
+pyexcel, pyexcel-xlsx, pyexcel-xlxsw
