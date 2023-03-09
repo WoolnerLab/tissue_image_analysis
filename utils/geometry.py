@@ -116,9 +116,9 @@ def get_pref_area(cell_areas, gamma, L, L_0, mean_cell_area):
     return pref_area
 
 
-def get_shape_tensor(R,C,cell_edge_count,cell_centres,cell_P_eff):
+def get_shape_tensor(R,C,cell_edge_count,cell_centres):
     """
-    celculate teh shape tensor and get principal axis and circularity
+    celculate the shape tensor and get principal axis and circularity
     """
     N_c=np.shape(C)[0]
     N_v=np.shape(C)[1]
@@ -150,11 +150,12 @@ def get_shape_tensor(R,C,cell_edge_count,cell_centres,cell_P_eff):
             eigen_vector_store2[i] = eigvecs[:,0]
             eigen_vector_store1[i] = eigvecs[:,1]
 
+        major_axis_store[i] = eigen_vector_store1[i]
 
-        if cell_P_eff[i]<0:
-            major_axis_store[i] = eigen_vector_store2[i]
-        else:
-            major_axis_store[i] = eigen_vector_store1[i]
+        # if cell_P_eff[i]<0:
+        #     major_axis_store[i] = eigen_vector_store2[i]
+        # else:
+        #     major_axis_store[i] = eigen_vector_store1[i]
 
         if major_axis_store[i][0] < 0:
             major_axis_alignment[i] = np.pi - np.arccos(major_axis_store[i][0]/(np.sqrt(major_axis_store[i][0]**2+major_axis_store[i][1]**2)))

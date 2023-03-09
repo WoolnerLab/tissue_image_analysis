@@ -198,7 +198,7 @@ def watershed_edges(nucleiFile, filename, holesFilename=None, maxCellSize=4000, 
     # allTriJuncs_ = np.array(setup_points.fuse(allTriJuncs_, 1.5))
     juncsTree = cKDTree(allTriJuncs_)
     allTriJuncs = set(map(tuple, allTriJuncs_))
-
+    #print(allTriJuncs)
     """ Find the watershed elements: """
 
     # Now we do the watershedding:
@@ -213,7 +213,6 @@ def watershed_edges(nucleiFile, filename, holesFilename=None, maxCellSize=4000, 
     # distance = ndi.distance_transform_edt(skeletonize(dilation(edges, disk(2))))
     # Now get the regions:
     labels = watershed(distance, markers)
-
     # Now we loop over the individual regions
     count = 0
     for i in np.unique(labels.flatten()):
@@ -231,9 +230,11 @@ def watershed_edges(nucleiFile, filename, holesFilename=None, maxCellSize=4000, 
 
         # print all((j == nucleiImage).flatten())
         area = labels_copy[labels_copy > 0].size
+        #print(i)
+        #print(area)
         # If we find huge/tiny regions its probs not a cell
         if area > minCellSize and area < maxCellSize and any(c.flatten()):
-            print (count)
+            #print (count)
             # y,x = np.nonzero(labels_copy)
 #             plt.plot(x,y,'o', ms=2)
 #             plt.imshow(edges)

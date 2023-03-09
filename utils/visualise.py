@@ -250,6 +250,7 @@ def angle_hist(plot_val, plot_name, savedir, bins_number, theta_lim, exp_ID ):
     ax.xaxis.labelpad=20
 
     plt.savefig(savedir + "/" + plot_name + "_" + exp_ID+".png")
+    plt.close()
 
 def plot_cell_sides(cell_data, plot_name, savedir, exp_ID):
     """
@@ -274,6 +275,7 @@ def plot_cell_sides(cell_data, plot_name, savedir, exp_ID):
 
 
     plt.savefig(savedir + "/" + plot_name + "_" + exp_ID+".png")
+    plt.close()
 
 def plot_summary_hist(cell_data, savedir, exp_ID):
     """
@@ -285,8 +287,9 @@ def plot_summary_hist(cell_data, savedir, exp_ID):
     exp_ID (string): chosen experiment id
     """
     fig, axes=plt.subplots(nrows=2, ncols=4, sharex=False, sharey=True, figsize=(12,6))
-    hist=cell_data.loc[:, ~cell_data.columns.isin(['cell_id', 'cell_perimeter_microns', 'cell_area_microns','cell_edge_count'])].hist(grid=False, ax=axes)
+    hist=cell_data.loc[:, ~cell_data.columns.isin(['cell_id','cell_edge_count'])].hist(grid=False, ax=axes)
     [x.title.set_size(14) for x in hist.ravel()]
     plt.suptitle('Summary Histograms', x=0.5, y=1.05, ha='center', fontsize='xx-large')
     fig.text(0.04, 0.5, 'Frequency', va='center', rotation='vertical', fontsize=14)
     plt.savefig(savedir+'/continuous_data_summary_'+ exp_ID+'.png')
+    plt.close()
