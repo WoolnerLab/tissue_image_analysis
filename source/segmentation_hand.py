@@ -25,15 +25,15 @@ def skeletonise(filename, smooth=True, cp=True):
     if smooth:
  
         #image=sk.binary_dilation(image, footprint=[[0, 0, 1], [0, 1, 0], [1, 0, 0]])
-        image=sk.binary_dilation(image, footprint=[[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-        #image = sk.binary_dilation(image)
+        #image=sk.binary_dilation(image, footprint=[[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        image = sk.binary_dilation(image)
    
 
     image = sk.binary_closing(image)
 
 
     if smooth:
-        image = sk.skeletonize(image)
+        image = sk.skeletonize(image, method='lee')
     if not smooth:
         image = sk.medial_axis(image, return_distance=False)
     
