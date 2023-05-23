@@ -33,7 +33,7 @@ def make_polygon(i, C, R, cell_centres):
 
 
 def graphNetworkColorBar(plot_name,plot_var,map_name,ColourBarLimitFlag,barMin,barMax,\
-t,A,C,R,cell_centres,axisLength,savedir,exp_ID,ExperimentFlag, NumberFlag, file_type):
+t,A,C,R,cell_centres,axisLength,savedir,edges_name,ExperimentFlag, NumberFlag, file_type):
     """
     Plots of cell network where cells are coloured according to some quantity
 
@@ -51,7 +51,7 @@ t,A,C,R,cell_centres,axisLength,savedir,exp_ID,ExperimentFlag, NumberFlag, file_
     cell_centres (numpy array): cell centre coordinates
     axisLength (float): size of plot
     savedir (string): location to save plot
-    exp_ID (string): chosen experiment id
+    edges_name (string): filename of trace
     ExperimentFlag (bool): sets axis length based on experiment or sims (set to 1)
     NumberFlag (bool): If 1 then number of cell will be added to each plot.
     file_type (string): file type to save image as
@@ -111,11 +111,11 @@ t,A,C,R,cell_centres,axisLength,savedir,exp_ID,ExperimentFlag, NumberFlag, file_
     ax.set_title("t = {}s, {}".format(t,plot_name))
 
     #Save Figure
-    plt.savefig(savedir + "/" + plot_name + "_" + exp_ID+"."+ file_type)
+    plt.savefig(savedir + "/"+edges_name+"_" + plot_name+"."+ file_type)
     plt.close()
 
 
-def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,CutPoint,MajorAxisIndicator,CellCentreIndicator,t,A,C,R,cell_centres,cell_P_eff,major_axis,axisLength,savedir,exp_ID,ExperimentFlag, file_type):
+def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,CutPoint,MajorAxisIndicator,CellCentreIndicator,t,A,C,R,cell_centres,cell_P_eff,major_axis,axisLength,savedir,edges_name,ExperimentFlag, file_type):
 
     """
     Plots of cell network where cells are coloured in a binary fashion
@@ -138,7 +138,7 @@ def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,
     major_axis (numpy array): cell major axis
     axisLength (float): size of plot
     savedir (string): location to save plot
-    exp_ID (string): chosen experiment id
+    edges_name (string): filename of trace
     ExperimentFlag (bool): sets axis length based on experiment or sims (set to 1)
     file_type (string): file type to save image as
     """
@@ -210,11 +210,11 @@ def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,
     #plt.gcf()
     plt.gca().set_aspect('equal')
     #Save Figure
-    fig.savefig(savedir + "/" + CellPropertyName + "_" + exp_ID+"."+file_type)
+    fig.savefig(savedir + "/"+edges_name+"_" + CellPropertyName+"."+ file_type)
 
     plt.close()
 
-def angle_hist(plot_val, plot_name, savedir, bins_number, theta_lim, exp_ID ):
+def angle_hist(plot_val, plot_name, savedir, bins_number, theta_lim, edges_name):
     """
     Function to plot a histogram binned by angle
 
@@ -224,7 +224,7 @@ def angle_hist(plot_val, plot_name, savedir, bins_number, theta_lim, exp_ID ):
     savedir (string): location to save plot
     bins_number (int): number of bins in histogram
     theta_lim (float): maximum theta for plot, in degrees
-    exp_ID (string): chosen experiment id
+    edges_name (string): filename of trace
     """
 
     # number of equal bins
@@ -249,10 +249,10 @@ def angle_hist(plot_val, plot_name, savedir, bins_number, theta_lim, exp_ID ):
     ax.set_title('Major Axis Alignment')
     ax.xaxis.labelpad=20
 
-    plt.savefig(savedir + "/" + plot_name + "_" + exp_ID+".png")
+    plt.savefig(savedir + "/"+edges_name+"_" + plot_name+".png")
     plt.close()
 
-def plot_cell_sides(cell_data, plot_name, savedir, exp_ID):
+def plot_cell_sides(cell_data, plot_name, savedir, edges_name):
     """
     Function to plot a var chart of the number of sides oer cell
 
@@ -260,7 +260,7 @@ def plot_cell_sides(cell_data, plot_name, savedir, exp_ID):
     cell_data (pandas dataframe): cell based data
     plot_name (string): Plot title and also name of figure.
     savedir (string): location to save plot
-    exp_ID (string): chosen experiment id
+    edges_name (string): filename of trace
     """
     countedges=cell_data['cell_edge_count'].value_counts().sort_index()
     cell_sides=np.array(countedges.index).astype(int)
@@ -274,22 +274,22 @@ def plot_cell_sides(cell_data, plot_name, savedir, exp_ID):
     ax.set_title('Number of Sides per Cell')
 
 
-    plt.savefig(savedir + "/" + plot_name + "_" + exp_ID+".png")
+    plt.savefig(savedir + "/"+edges_name+"_" + plot_name+".png")
     plt.close()
 
-def plot_summary_hist(cell_data, savedir, exp_ID):
+def plot_summary_hist(cell_data, savedir, edges_name):
     """
     plot histograms for all of the continuous cell data
 
     Parameters:
     cell_data (pandas dataframe): cell based data
     savedir (string): location to save plot
-    exp_ID (string): chosen experiment id
+    edges_name(string): filename of trace
     """
     fig, axes=plt.subplots(nrows=2, ncols=4, sharex=False, sharey=True, figsize=(12,6))
-    hist=cell_data.loc[:, ~cell_data.columns.isin(['cell_id','cell_edge_count'])].hist(grid=False, ax=axes)
+    hist=cell_data.loc[:, ~cell_data.columns.isin(['cell_id','cell_edge_count','cell_perimeter_nd', 'cell_area_nd'])].hist(grid=False, ax=axes)
     [x.title.set_size(14) for x in hist.ravel()]
     plt.suptitle('Summary Histograms', x=0.5, y=1.05, ha='center', fontsize='xx-large')
     fig.text(0.04, 0.5, 'Frequency', va='center', rotation='vertical', fontsize=14)
-    plt.savefig(savedir+'/continuous_data_summary_'+ exp_ID+'.png')
+    plt.savefig(savedir+'/'+edges_name+'_continuous_data_summary.png')
     plt.close()
