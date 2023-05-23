@@ -144,7 +144,7 @@ cell_P_eff = mechanics.get_P_eff(areas_nd, Gamma, perimeters_nd, pref_perimeter)
 cell_pressures = mechanics.get_cell_pressures(areas_nd)
 cell_tensions = mechanics.get_cell_tensions(Gamma, perimeters_nd, pref_perimeter)
 cell_shears,cell_zetas = mechanics.calc_shear(tangents_nd,edge_lengths_nd,B,perimeters_nd,cell_tensions,areas_nd)
-cell_circularity, major_axis, major_axis_alignment=geometry.get_shape_tensor(R_nd,C,cell_edge_count,cell_centres_nd,cell_P_eff)
+cell_circularity, major_shape_axis, major_shape_axis_alignment,major_stress_axis, major_stress_axis_alignment=geometry.get_shape_tensor(R_nd,C,cell_edge_count,cell_centres_nd,cell_P_eff)
 shape_parameter = perimeters_nd/(np.sqrt(areas_nd))
 
 global_stress= mechanics.get_global_stress(cell_P_eff, areas_nd)

@@ -95,7 +95,7 @@ def get_areas(A, B, R):
     for i in range(N_c):
         for j in range(N_e):
             cell_areas[i]+=0.5*np.dot(nij[i,j],c[j])
-    return cell_areas
+    return abs(cell_areas)
 
 def get_mean_area(cell_areas):
     """
@@ -116,7 +116,7 @@ def get_pref_area(cell_areas, gamma, L, L_0, mean_cell_area):
     return pref_area
 
 
-def get_shape_tensor(R,C,cell_edge_count,cell_centres):
+def get_shape_tensor(R,C,cell_edge_count,cell_centres,cell_P_eff=False):
     """
     celculate the shape tensor and get principal axis and circularity
     """
@@ -127,8 +127,10 @@ def get_shape_tensor(R,C,cell_edge_count,cell_centres):
     eigen_val_store = np.zeros((N_c,2))
     eigen_vector_store1 = np.zeros((N_c,2))
     eigen_vector_store2 = np.zeros((N_c,2))
-    major_axis_store = np.zeros((N_c,2))
-    major_axis_alignment = np.zeros((N_c))
+    major_shape_axis_store = np.zeros((N_c,2))
+    major_shape_axis_alignment = np.zeros((N_c))
+    major_stress_axis_store = np.zeros((N_c,2))
+    major_stress_axis_alignment = np.zeros((N_c))
 
     for i in range(N_c):
         shape_tensor = np.zeros((2,2))
@@ -150,19 +152,28 @@ def get_shape_tensor(R,C,cell_edge_count,cell_centres):
             eigen_vector_store2[i] = eigvecs[:,0]
             eigen_vector_store1[i] = eigvecs[:,1]
 
-        major_axis_store[i] = eigen_vector_store1[i]
+        major_shape_axis_store[i] = eigen_vector_store1[i]
 
-        # if cell_P_eff[i]<0:
-        #     major_axis_store[i] = eigen_vector_store2[i]
-        # else:
-        #     major_axis_store[i] = eigen_vector_store1[i]
-
-        if major_axis_store[i][0] < 0:
-            major_axis_alignment[i] = np.pi - np.arccos(major_axis_store[i][0]/(np.sqrt(major_axis_store[i][0]**2+major_axis_store[i][1]**2)))
+        if major_shape_axis_store[i][0] < 0:
+            major_shape_axis_alignment[i] = np.pi - np.arccos(major_shape_axis_store[i][0]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)))
         else:
-            major_axis_alignment[i] = np.arccos(major_axis_store[i][0]/(np.sqrt(major_axis_store[i][0]**2+major_axis_store[i][1]**2)))
-
+            major_shape_axis_alignment[i] = np.arccos(major_shape_axis_store[i][0]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)))
 
         circularity[i] = abs(eigen_val_store[i][1]/eigen_val_store[i][0])
 
-    return circularity,major_axis_store,major_axis_alignment
+
+        if cell_P_eff:
+            if cell_P_eff[i]<0:
+                major_stress_axis_store[i] = eigen_vector_store2[i]
+            else:
+                major_stress_axis_store[i] = eigen_vector_store1[i]
+            
+            if major_stress_axis_store[i][0] < 0:
+                major_stress_axis_alignment[i] = np.pi - np.arccos(major_stress_axis_store[i][0]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)))
+            else:
+                major_stress_axis_alignment[i] = np.arccos(major_stress_axis_store[i][0]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)))
+
+    if cell_P_eff:
+        return circularity,major_shape_axis_store,major_shape_axis_alignment,major_stress_axis_store,major_stress_axis_alignment
+    else:
+        return circularity,major_shape_axis_store,major_shape_axis_alignment
