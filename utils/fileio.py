@@ -35,19 +35,12 @@ def setup_directories(output_dir, exp_ID):
 def read_conf(filename):
     """ read in config file """
     conf_data=pd.read_csv(filename)
-
-    exp_date=str(conf_data.Exp_date[0])
-    exp_ID=conf_data.Exp_ID[0]
-    trace_type=int(conf_data.Trace_Type[0]) #0=Manual, 1=cellpose
-    nuclei_exist=conf_data.Nuclei_Exist[0] #is there a nuclei file (probably not if in cellpose)
-    edges_name=conf_data.Edges_Name[0]
-    nuclei_name=conf_data.Nuclei_Name[0]
-    stretch_type=int(conf_data.Stretch_Type[0]) # 0=Unstretched, 1=Fast Stretch, 2=Incremental Stretch
-    t=conf_data.t_sec[0] #time in seconds of image
+    edges_name=conf_data.Edges_Name[0] # file name excluding .tif
+    t_min=conf_data.t_min[0] #time in minutes of image
     pixel_size=conf_data.Pixel_Size[0] #from raw image
     micron_size=conf_data.Micron_Size[0] #from raw image
 
-    return exp_date, exp_ID, trace_type, nuclei_exist, edges_name, nuclei_name, stretch_type,t, pixel_size, micron_size
+    return  edges_name, t_min, pixel_size, micron_size
 
 
 def write_parameters(savedir,exp_ID,stretch_type,t,pixel_size, micron_size,Gamma, Lambda, pref_area, area_scaling_gradient):
