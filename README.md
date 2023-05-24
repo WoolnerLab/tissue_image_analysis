@@ -9,16 +9,11 @@ For this itteration of the code we need traces with spider legs and dots (nuclei
 
 Cell traces and 'nuclei' files should be placed in the input file. For each trace a configuration file should be filled out. This is a .csv file with the following fields:
 
- - **Exp_date**: The date the experiment was run in yyyymmdd format
- - **Exp_ID**: an identifier of your chosing for the experient, makesure this begins with the date in yyyymmdd format. Sugest including time point and stretch type.
- - **Trace_Type**: 0=Manual, 1=Cellpose (this is here for future development)
- - **Nuclei_Exist**: 0= no, 1=yes, (also here for future code development, currently nuclei are necessary)
+
  - **Edges_Name**: the name of the trace file without extension.
- - **Nuclei_Name**: the name of the nuclei file without extension.
- - **Stretch_Type**: 0=unstretched, 1= fast stretch, 2= incremental stretch
- - **t_sec**: Timepoint in experiement in minutes.
- - **Pixel_Size**: pixel size from original image (find in Fiji, likely to be 1024 or 512)
- - **Micron_Size**: micron size from original image (find in Fiji)
+ - **t_min**: Timepoint in experiement in minutes.
+ - **Pixel_Size**: pixel size from original image (find in Fiji or log, likely to be 1024 or 512)
+ - **Micron_Size**: micron size from original image (find in Fiji or log)
 
 
 The fields are case sensitive so do not change the names of the columns.
@@ -30,7 +25,7 @@ that there is a pref area file calculated from the t=0s trace in the input direc
 which should start with the date of the experiment. If you have experiments from the same date, be
 sure to only have the pref_area file from the desired experiment in the Input folder.
 
-## Partially running code
+<!-- ## Partially running code
 
 If you have the trace data files:
   - UniqueTissueEdges.npy
@@ -48,4 +43,4 @@ If you have the matrix files:
   - Matrix_R.txt
 
 You can run _data_generation.py_ to generate data and plots.
-You will need to supply the path to the files in the user input section at the top of the script. 
+You will need to supply the path to the files in the user input section at the top of the script.  -->
