@@ -155,9 +155,9 @@ def get_shape_tensor(R,C,cell_edge_count,cell_centres,cell_P_eff=False):
         major_shape_axis_store[i] = eigen_vector_store1[i]
 
         if major_shape_axis_store[i][0] < 0:
-            major_shape_axis_alignment[i] = np.pi - np.arccos(major_shape_axis_store[i][0]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)))
+            major_shape_axis_alignment[i] = np.arctan2(major_shape_axis_store[i][1]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)),major_shape_axis_store[i][0]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)))+np.pi
         else:
-            major_shape_axis_alignment[i] = np.arccos(major_shape_axis_store[i][0]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)))
+            major_shape_axis_alignment[i] = np.arctan2(major_shape_axis_store[i][1]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)),major_shape_axis_store[i][0]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)))
 
         circularity[i] = abs(eigen_val_store[i][1]/eigen_val_store[i][0])
 
@@ -169,9 +169,9 @@ def get_shape_tensor(R,C,cell_edge_count,cell_centres,cell_P_eff=False):
                 major_stress_axis_store[i] = eigen_vector_store1[i]
             
             if major_stress_axis_store[i][0] < 0:
-                major_stress_axis_alignment[i] = np.pi - np.arccos(major_stress_axis_store[i][0]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)))
+                major_stress_axis_alignment[i] = np.arctan2(major_stress_axis_store[i][1]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)),major_stress_axis_store[i][0]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)))+np.pi
             else:
-                major_stress_axis_alignment[i] = np.arccos(major_stress_axis_store[i][0]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)))
+                major_stress_axis_alignment[i] = np.arctan2(major_stress_axis_store[i][1]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)),major_stress_axis_store[i][0]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)))
 
     if len(cell_P_eff)>1:
         return circularity,major_shape_axis_store,major_shape_axis_alignment,major_stress_axis_store,major_stress_axis_alignment

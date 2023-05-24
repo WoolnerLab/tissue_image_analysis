@@ -27,10 +27,10 @@ output_dir=CURRENT_DIR+'/Output/'
 #########################
 
 #Name of config file stored with input images
-conf_file=input_dir+'20230330_NT_GFP-TubNuMA-MO_bf_4p0_conf.csv'
+conf_file=input_dir+'20230426_2_NT_GFPTub-ControlMO_bf_0p5_MP_fr1_trace_junctions.csv'
 
 #Path to directory where Matrices are stored
-indata_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\Code\\tissue_image_analysis\\tissue_image_analysis\\Output\\20230330_NT_GFP-TubNuMA-MO_bf_4p0\\2023-05-24_10-35-08\\Matrices'
+indata_dir="C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Code\\tissue_image_analysis\\tissue_image_analysis\\Output\\20230426_2_NT_GFPTub-ControlMO_bf_0p5_MP_fr1\\2023-05-24_15-10-05\\Matrices"
 
 #########################
 #Constant variables
