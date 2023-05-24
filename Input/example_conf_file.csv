@@ -1,2 +1,2 @@
-Exp_date,Exp_ID,Trace_Type,Nuclei_Exist,Edges_Name,Nuclei_Name,Stretch_Type,t_sec,Pixel_Size,Micron_Size
-20191205,20191205_0s,0,1,20191205_0min_Edges,20191205_0min_Nuclei,0,0,1024,554.11
+Edges_Name,t_min,Pixel_Size,Micron_Size
+20191205_0min_Edges,0,1024,554.11
