@@ -80,10 +80,10 @@ def write_matrices(savedir,A, B, C,R, edges_name):
     """
     Writes matrices A, B, C and vertex positions R to file 
     """
-    np.savetxt(savedir+'/'+edges_name+"Matrix_A.txt",A)
-    np.savetxt(savedir+'/'+edges_name+"Matrix_B.txt",B)
-    np.savetxt(savedir+'/'+edges_name+"Matrix_R.txt",R)
-    np.savetxt(savedir+'/'+edges_name+"Matrix_C.txt",C)
+    np.savetxt(savedir+'/'+edges_name+"_Matrix_A.txt",A)
+    np.savetxt(savedir+'/'+edges_name+"_Matrix_B.txt",B)
+    np.savetxt(savedir+'/'+edges_name+"_Matrix_R.txt",R)
+    np.savetxt(savedir+'/'+edges_name+"_Matrix_C.txt",C)
 
 def write_pref_area(savedir,input_dir, edges_name, pref_area):
     """ Write preffered area to file """
