@@ -12,3 +12,6 @@ tifffile
 mahotas
 trackpy
 pyexcel, pyexcel-xlsx, pyexcel-xlxsw
+networkx
+skan
+itertools
