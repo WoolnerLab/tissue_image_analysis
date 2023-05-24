@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 import csv
 from datetime import datetime
-from pyexcel.cookbook import merge_all_to_a_book
+
 
 def setup_directories(output_dir, edges_name):
     """ Set up directories to store outputs """
@@ -65,13 +65,11 @@ def write_cell_data(savedir,edge_verts, cells,cell_edges, edges_name):
         writer = csv.writer(output)
         for key, value in sorted(cell_edges.items()):
             writer.writerow(value)
-    #merge_all_to_a_book(glob.glob(savedir+"/*.csv"),savedir+'/'+edges_name+'_cell_edges.xlsx")
     #write vertices per cell, non uniform number of edges per cell so slightly awkward.
     with open(savedir+'/'+edges_name+'_cell_vertices.csv', 'w', newline='') as output:
         writer = csv.writer(output)
         for i in cells:
             writer.writerow(i)
-    #merge_all_to_a_book(glob.glob(savedir+edges_name+"/*.csv"), savedir+"/cell_vertices.xlsx")
     #write vertices and edges
     np.savetxt(savedir+'/'+edges_name+"_edge_verts.csv",np.asarray(edge_verts))
 
