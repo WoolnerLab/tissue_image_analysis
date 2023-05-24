@@ -40,7 +40,7 @@ output_dir=CURRENT_DIR+'/Output/'
 #User Input
 #########################
 
-conf_file=input_dir+'20230330_NT_GFP-TubNuMA-MO_bf_4p0_conf.csv' #name of config file
+conf_file=input_dir+'20230426_2_NT_GFPTub-ControlMO_bf_0p5_MP_fr1_trace_junctions.csv' #name of config file
 
 #########################
 #Constant variables
@@ -59,6 +59,7 @@ ExperimentFlag = 1
 
 #read in conf file
 edges_name,t_min, pixel_size, micron_size = fileio.read_conf(conf_file)
+exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[7]
 t=t_min*60.0
 stretch_type=edges_name.split('_')[3][-1]
 
@@ -71,10 +72,10 @@ save_dir, trace_dir, matrix_dir, data_dir, plot_dir = fileio.setup_directories(o
 ##############################
 print("Extracing trace data")
 edge_verts,cells, cell_edges, A, B, C, R, image0 = handtrace.run_trace(edges_name, input_dir)
-fileio.write_cell_data(trace_dir,edge_verts,cells, cell_edges, edges_name)
+fileio.write_cell_data(trace_dir,edge_verts,cells, cell_edges, exp_id)
 handtrace.check_trace_plot(save_dir,image0, cells, R, edges_name)
 print("Writing Matrices")
-fileio.write_matrices(matrix_dir, A, B, C, R, edges_name)
+fileio.write_matrices(matrix_dir, A, B, C, R, exp_id)
 
 ##############################
 #Get cell geometry
@@ -163,11 +164,11 @@ cell_data_geom=np.transpose(np.vstack((cell_id, cell_perimeters, cell_areas,\
 geom_df=pd.DataFrame(cell_data_geom, columns=geom_data_names)
 
 #write data frames and summary stats
-cell_df.to_csv(data_dir + '/'+edges_name+'_cell_data_all_Gamma_'+str(Gamma)+'_Lambda_'+str(Lambda)+'.csv', index=False)
-cell_df.iloc[:,1:].describe().to_csv(data_dir + '/'+edges_name+'_summary_stats_Gamma_'+str(Gamma)+'_Lambda_'+str(Lambda)+'.csv')
+cell_df.to_csv(data_dir + '/'+exp_id+'_cell_data_all_Gamma_'+str(Gamma)+'_Lambda_'+str(Lambda)+'.csv', index=False)
+cell_df.iloc[:,1:].describe().to_csv(data_dir + '/'+exp_id+'_summary_stats_Gamma_'+str(Gamma)+'_Lambda_'+str(Lambda)+'.csv')
 
-geom_df.to_csv(data_dir + '/'+edges_name+'_cell_data_geometry.csv', index=False)
-geom_df.iloc[:,1:].describe().to_csv(data_dir + '/'+edges_name+'_geometry_summary_stats.csv')
+geom_df.to_csv(data_dir + '/'+exp_id+'_cell_data_geometry.csv', index=False)
+geom_df.iloc[:,1:].describe().to_csv(data_dir + '/'+exp_id+'_geometry_summary_stats.csv')
 
 fileio.write_global_data(global_stress, monolayer_energy, data_dir,edges_name) #write global data
 

@@ -15,9 +15,9 @@ from datetime import datetime
 
 def setup_directories(output_dir, edges_name):
     """ Set up directories to store outputs """
-    if os.path.exists(output_dir+edges_name)==False: os.mkdir(output_dir+edges_name)
+    if os.path.exists(output_dir+edges_name.split('_trace')[0])==False: os.mkdir(output_dir+edges_name.split('_trace')[0])
 
-    mydir = os.path.join(output_dir+edges_name, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+    mydir = os.path.join(output_dir+edges_name.split('_trace')[0], datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
     os.mkdir(mydir)
 
     trdir=mydir+"/Trace_extraction"
@@ -52,7 +52,7 @@ def write_parameters(savedir,edges_name,stretch_type,t,pixel_size, micron_size,G
         f.write('# exp_ID,stretch_type,t_sec,pixel_size, micron_size,Gamma, Lambda, pref_area unscaled, area_scaling_gradient \n')
         f.write('{}, {}, {},{}, {}, {},{}, {}, {} '.format(edges_name,stretch_type,t,pixel_size, micron_size,Gamma, Lambda, pref_area, area_scaling_gradient))
 
-def write_cell_data(savedir,edge_verts, cells,cell_edges, edges_name):
+def write_cell_data(savedir,edge_verts, cells,cell_edges, exp_id):
     """
     function to write the cell data from the trace to file.
      -vertices connected by an edge
@@ -61,33 +61,33 @@ def write_cell_data(savedir,edge_verts, cells,cell_edges, edges_name):
 
     """
     #write edges per cell, non uniform number of edges per cell so slightly awkward.
-    with open(savedir+'/'+edges_name+'_cell_edges.csv', 'w', newline='') as output:
+    with open(savedir+'/'+exp_id+'_cell_edges.csv', 'w', newline='') as output:
         writer = csv.writer(output)
         for key, value in sorted(cell_edges.items()):
             writer.writerow(value)
     #write vertices per cell, non uniform number of edges per cell so slightly awkward.
-    with open(savedir+'/'+edges_name+'_cell_vertices.csv', 'w', newline='') as output:
+    with open(savedir+'/'+exp_id+'_cell_vertices.csv', 'w', newline='') as output:
         writer = csv.writer(output)
         for i in cells:
             writer.writerow(i)
     #write vertices and edges
-    np.savetxt(savedir+'/'+edges_name+"_edge_verts.csv",np.asarray(edge_verts))
+    np.savetxt(savedir+'/'+exp_id+"_edge_verts.csv",np.asarray(edge_verts))
 
     
-def write_matrices(savedir,A, B, C,R, edges_name):
+def write_matrices(savedir,A, B, C,R, exp_id):
     """
     Writes matrices A, B, C and vertex positions R to file 
     """
-    np.savetxt(savedir+'/'+edges_name+"_Matrix_A.txt",A)
-    np.savetxt(savedir+'/'+edges_name+"_Matrix_B.txt",B)
-    np.savetxt(savedir+'/'+edges_name+"_Matrix_R.txt",R)
-    np.savetxt(savedir+'/'+edges_name+"_Matrix_C.txt",C)
+    np.savetxt(savedir+'/'+exp_id+"_Matrix_A.txt",A)
+    np.savetxt(savedir+'/'+exp_id+"_Matrix_B.txt",B)
+    np.savetxt(savedir+'/'+exp_id+"_Matrix_R.txt",R)
+    np.savetxt(savedir+'/'+exp_id+"_Matrix_C.txt",C)
 
 def write_pref_area(savedir,input_dir, edges_name, pref_area):
     """ Write preffered area to file """
-    with open(savedir+'/'+edges_name+'_pref_area.txt', 'w') as f:
+    with open(savedir+'/'+edges_name.split('_trace')[0]+'_pref_area.txt', 'w') as f:
         f.write('{}'.format(pref_area))
-    with open(input_dir+'/'+edges_name+'_pref_area.txt', 'w') as f:
+    with open(input_dir+'/'+edges_name.split('_trace')[0]+'_pref_area.txt', 'w') as f:
         f.write('{}'.format(pref_area))
 
 def read_pref_area(savedir, edges_name):
@@ -101,6 +101,6 @@ def read_pref_area(savedir, edges_name):
 
 def write_global_data(global_stress, total_energy, savedir, edges_name):
     """write global quantities to file"""
-    with open(savedir+'/'+edges_name+'_global_data.txt', 'w') as f:
+    with open(savedir+'/'+edges_name.split('_trace')[0]+'_global_data.txt', 'w') as f:
         f.write('# global_stress, monolayer_energy \n')
         f.write('{}, {}'.format(global_stress, total_energy))

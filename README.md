@@ -25,22 +25,3 @@ that there is a pref area file calculated from the t=0s trace in the input direc
 which should start with the date of the experiment. If you have experiments from the same date, be
 sure to only have the pref_area file from the desired experiment in the Input folder.
 
-<!-- ## Partially running code
-
-If you have the trace data files:
-  - UniqueTissueEdges.npy
-  - uniqueTissueVerts.npy
-  - centroids.xlsx
-  - edgesOnCells.xlsx
-
-You can run _matrix_generation.py_ to generate the cell matrices. 
-You will need to supply the path to the files in the user input section at the top of the script. 
-
-If you have the matrix files:
-  - Matrix_A.txt
-  - Matrix_B.txt
-  - Matrix_C.txt
-  - Matrix_R.txt
-
-You can run _data_generation.py_ to generate data and plots.
-You will need to supply the path to the files in the user input section at the top of the script.  -->
