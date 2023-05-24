@@ -246,7 +246,7 @@ def angle_hist(plot_val, plot_name, savedir, bins_number, theta_lim, edges_name)
     ax.set_thetamax(theta_lim)
     ax.yaxis.grid(False)
     ax.set_xlabel('Frequency')
-    ax.set_title('Major Axis Alignment')
+    ax.set_title(plot_name)
     ax.xaxis.labelpad=20
 
     plt.savefig(savedir + "/"+edges_name+"_" + plot_name+".png")
@@ -277,7 +277,7 @@ def plot_cell_sides(cell_data, plot_name, savedir, edges_name):
     plt.savefig(savedir + "/"+edges_name+"_" + plot_name+".png")
     plt.close()
 
-def plot_summary_hist(cell_data, savedir, edges_name):
+def plot_summary_hist(cell_data, plot_name, savedir, edges_name):
     """
     plot histograms for all of the continuous cell data
 
@@ -286,10 +286,12 @@ def plot_summary_hist(cell_data, savedir, edges_name):
     savedir (string): location to save plot
     edges_name(string): filename of trace
     """
-    fig, axes=plt.subplots(nrows=2, ncols=4, sharex=False, sharey=True, figsize=(12,6))
-    hist=cell_data.loc[:, ~cell_data.columns.isin(['cell_id','cell_edge_count','cell_perimeter_nd', 'cell_area_nd'])].hist(grid=False, ax=axes)
+    df=cell_data.loc[:, ~cell_data.columns.isin(['cell_id','cell_edge_count','cell_perimeter_nd', 'cell_area_nd'])]
+    #fig, axes=plt.subplots(nrows=2, ncols=int(np.ceil(df.shape[1]/2)), sharex=False, sharey=True, figsize=(12,6))
+    hist=df.hist()
     [x.title.set_size(14) for x in hist.ravel()]
     plt.suptitle('Summary Histograms', x=0.5, y=1.05, ha='center', fontsize='xx-large')
-    fig.text(0.04, 0.5, 'Frequency', va='center', rotation='vertical', fontsize=14)
-    plt.savefig(savedir+'/'+edges_name+'_continuous_data_summary.png')
+    #plt.text(0.04, 0.5, 'Frequency', va='center', rotation='vertical', fontsize=14)
+    plt.tight_layout()
+    plt.savefig(savedir+'/'+edges_name+plot_name+'_continuous_data_summary.png')
     plt.close()

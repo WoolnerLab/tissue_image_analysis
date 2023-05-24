@@ -26,10 +26,10 @@ output_dir=CURRENT_DIR+'/Output/'
 #########################
 
 #Name of config file stored with input images
-conf_file=input_dir+'conf_file.csv' 
+conf_file=input_dir+'20191205_4800s_cp.csv' 
 
 #Path to directory where Matrices are stored
-indata_dir='C:\\Users/v35431nc/Documents/Lab Stuff/Code/Natasha_Analysis_Code/Output/20191205_0s/2023-02-13_15-20-51/Matrices'
+indata_dir='C:\\Users\\v35431nc\\Documents\\Lab Stuff\\Code\\Test_new_IA_cellpose\\20191205_80min\\cellpose/Matrices'
 
 #########################
 #Constant variables
@@ -61,10 +61,10 @@ if os.path.exists(plot_dir)==False: os.mkdir(plot_dir)
 
 
 
-A  = np.loadtxt(indata_dir+'/Matrix_A.txt') # Incidence matrix. Rows => edges; columns => vertices.
-B  = np.loadtxt(indata_dir+'/Matrix_B.txt') # Incidence matrix. Rows => cells; columns => edges. Values +/-1 for orientation
-C  = np.loadtxt(indata_dir+'/Matrix_C.txt') # Incidence matrix. Rows => cells; columns => vertices. 
-R  = np.loadtxt(indata_dir+'/Matrix_R.txt') # Coordinates of vertices
+A  = np.loadtxt(indata_dir+'/Matrix_A_20191205_80min_inv_cp_orig_new.txt') # Incidence matrix. Rows => edges; columns => vertices.
+B  = np.loadtxt(indata_dir+'/Matrix_B_20191205_80min_inv_cp_orig_new.txt') # Incidence matrix. Rows => cells; columns => edges. Values +/-1 for orientation
+C  = np.loadtxt(indata_dir+'/Matrix_C_20191205_80min_inv_cp_orig_new.txt') # Incidence matrix. Rows => cells; columns => vertices. 
+R  = np.loadtxt(indata_dir+'/Matrix_R_20191205_80min_inv_cp_orig_new.txt') # Coordinates of vertices
 
 ##############################
 #Get cell geometry
@@ -72,6 +72,7 @@ R  = np.loadtxt(indata_dir+'/Matrix_R.txt') # Coordinates of vertices
 R=R*(micron_size/pixel_size)
 
 cell_areas=geometry.get_areas(A,B, R)
+#print(cell_areas)
 cell_perimeters=geometry.get_perimeters(A,B,R)
 cell_edge_count=geometry.get_edge_count(B)
 cell_centres=geometry.get_cell_centres(C,R,cell_edge_count)
@@ -123,7 +124,7 @@ cell_P_eff = mechanics.get_P_eff(areas_nd, Gamma, perimeters_nd, pref_perimeter)
 cell_pressures = mechanics.get_cell_pressures(areas_nd)
 cell_tensions = mechanics.get_cell_tensions(Gamma, perimeters_nd, pref_perimeter)
 cell_shears,cell_zetas = mechanics.calc_shear(tangents_nd,edge_lengths_nd,B,perimeters_nd,cell_tensions,areas_nd)
-cell_circularity, major_axis, major_axis_alignment=geometry.get_shape_tensor(R_nd,C,cell_edge_count,cell_centres_nd,cell_P_eff)
+cell_circularity, major_axis, major_axis_alignment=geometry.get_shape_tensor(R_nd,C,cell_edge_count,cell_centres_nd)
 shape_parameter = perimeters_nd/(np.sqrt(areas_nd))
 
 global_stress= mechanics.get_global_stress(cell_P_eff, areas_nd)

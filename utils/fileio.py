@@ -48,11 +48,11 @@ def write_parameters(savedir,edges_name,stretch_type,t,pixel_size, micron_size,G
     if stretch_type=='u' or t==0:
         area_scaling=0
 
-    with open(savedir+'/'+exp_ID+'_parameters.txt', 'w') as f:
+    with open(savedir+'/'+edges_name+'_parameters.txt', 'w') as f:
         f.write('# exp_ID,stretch_type,t_sec,pixel_size, micron_size,Gamma, Lambda, pref_area unscaled, area_scaling_gradient \n')
         f.write('{}, {}, {},{}, {}, {},{}, {}, {} '.format(edges_name,stretch_type,t,pixel_size, micron_size,Gamma, Lambda, pref_area, area_scaling_gradient))
 
-def write_cell_data(savedir,edge_verts, cells,cell_edges):
+def write_cell_data(savedir,edge_verts, cells,cell_edges, edges_name):
     """
     function to write the cell data from the trace to file.
      -vertices connected by an edge
@@ -61,29 +61,29 @@ def write_cell_data(savedir,edge_verts, cells,cell_edges):
 
     """
     #write edges per cell, non uniform number of edges per cell so slightly awkward.
-    with open(savedir+'/cell_edges.csv', 'w', newline='') as output:
+    with open(savedir+'/'+edges_name+'_cell_edges.csv', 'w', newline='') as output:
         writer = csv.writer(output)
         for key, value in sorted(cell_edges.items()):
             writer.writerow(value)
-    merge_all_to_a_book(glob.glob(savedir+"/*.csv"), savedir+"/cell_edges.xlsx")
+    #merge_all_to_a_book(glob.glob(savedir+"/*.csv"),savedir+'/'+edges_name+'_cell_edges.xlsx")
     #write vertices per cell, non uniform number of edges per cell so slightly awkward.
-    with open(savedir+'/cell_vertices.csv', 'w', newline='') as output:
+    with open(savedir+'/'+edges_name+'_cell_vertices.csv', 'w', newline='') as output:
         writer = csv.writer(output)
         for i in cells:
             writer.writerow(i)
-    merge_all_to_a_book(glob.glob(savedir+"/*.csv"), savedir+"/cell_vertices.xlsx")
+    #merge_all_to_a_book(glob.glob(savedir+edges_name+"/*.csv"), savedir+"/cell_vertices.xlsx")
     #write vertices and edges
-    np.savetxt(savedir+"/edge_verts.csv",np.asarray(edge_verts))
+    np.savetxt(savedir+'/'+edges_name+"_edge_verts.csv",np.asarray(edge_verts))
 
     
-def write_matrices(savedir,A, B, C,R):
+def write_matrices(savedir,A, B, C,R, edges_name):
     """
     Writes matrices A, B, C and vertex positions R to file 
     """
-    np.savetxt(savedir+"/Matrix_A.txt",A)
-    np.savetxt(savedir+"/Matrix_B.txt",B)
-    np.savetxt(savedir+"/Matrix_R.txt",R)
-    np.savetxt(savedir+"/Matrix_C.txt",C)
+    np.savetxt(savedir+'/'+edges_name+"Matrix_A.txt",A)
+    np.savetxt(savedir+'/'+edges_name+"Matrix_B.txt",B)
+    np.savetxt(savedir+'/'+edges_name+"Matrix_R.txt",R)
+    np.savetxt(savedir+'/'+edges_name+"Matrix_C.txt",C)
 
 def write_pref_area(savedir,input_dir, edges_name, pref_area):
     """ Write preffered area to file """
@@ -93,20 +93,13 @@ def write_pref_area(savedir,input_dir, edges_name, pref_area):
         f.write('{}'.format(pref_area))
 
 def read_pref_area(savedir, edges_name):
-    exp_date=edges_name.split('_')[0]
+    exp_date=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]
     """ read preffered area from file """
     with open(glob.glob(savedir+"/"+exp_date+"*pref_area.txt")[0],"r") as f:
         pref_area=float(f.readline())
     return pref_area
 
 
-def write_data(cell_data,savedir, edges_name):
-    """ write cell data to file """
-    cell_data.to_csv(savedir + '/cell_data_'+edges_name+'.csv', index=False)
-
-def write_summary_stats(cell_data, savedir, edges_name):
-    """ calculate and write summary stats to file """
-    cell_data.iloc[:,1:].describe().to_csv(savedir + '/summary_stats_'+edges_name+'.csv')
 
 def write_global_data(global_stress, total_energy, savedir, edges_name):
     """write global quantities to file"""

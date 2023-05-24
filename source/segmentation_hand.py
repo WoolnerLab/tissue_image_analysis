@@ -112,6 +112,7 @@ def get_cycles(G, n_threshold):
     return cells
 
 def assign_edges_to_cells(cells, edge_verts, Ne):
+    #edge indexs in each cell.
     cell_edges={}
     for i in range(len(cells)):
         for j in range(Ne):

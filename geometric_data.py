@@ -36,7 +36,7 @@ CURRENT_DIR = os.getcwd()
 input_dir=CURRENT_DIR+'/Input/'
 output_dir=CURRENT_DIR+'/Output/Unstretched_Geometry/'
 
-files=sorted(glob.glob(input_dir+'20200819_*.csv'))
+files=sorted(glob.glob(input_dir+'20191205_0s_cp.csv'))
 for file in files:
     #########################
     #User Input
