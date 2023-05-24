@@ -18,11 +18,6 @@ import pandas as pd
 from datetime import datetime
 
 
-from source import tissue
-from source import cell
-from source import edge_detection
-from source import setup_points
-from source import graham_scan
 
 from utils import fileio
 from utils import handtrace
