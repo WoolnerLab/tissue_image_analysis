@@ -183,8 +183,8 @@ visualise.plot_summary_hist(geom_df,'geom_data', plot_dir, edges_name)
 visualise.plot_cell_sides(cell_df, "Number_of_Sides", plot_dir, edges_name)
 
 #angle histogram
-#visualise.angle_hist(cell_df['major_shape_axis_alignment_rads'], "Major Shape Axis Alignment", plot_dir, 12, 180 , edges_name)
-#visualise.angle_hist(cell_df['major_stress_axis_alignment_rads'], "Major Stress Axis Alignment", plot_dir, 12, 189 , edges_name)
+visualise.angle_hist(cell_df['major_shape_axis_alignment_rads'], "Major Shape Axis Alignment", plot_dir, 12, 180 , edges_name)
+visualise.angle_hist(cell_df['major_stress_axis_alignment_rads'], "Major Stress Axis Alignment", plot_dir, 12, 180 , edges_name)
 ##### Network Plots ####
 axisLength = micron_size/(pref_area**(1/2.)) + 0.5
 

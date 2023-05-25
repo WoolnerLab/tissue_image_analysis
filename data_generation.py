@@ -49,18 +49,19 @@ ExperimentFlag = 1
 
 #read in conf file
 edges_name,t_min, pixel_size, micron_size = fileio.read_conf(conf_file)
+exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[7]
 t=t_min*60.0
 stretch_type=edges_name.split('_')[3][-1]
 
 #make directories to output to
-if os.path.exists(output_dir+edges_name)==False: os.mkdir(output_dir+edges_name)
+if os.path.exists(output_dir+edges_name.split('_trace')[0])==False: os.mkdir(output_dir+edges_name.split('_trace')[0])
 
-mydir = os.path.join(output_dir+edges_name, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+mydir = os.path.join(output_dir+edges_name.split('_trace')[0], datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 os.mkdir(mydir)
 data_dir=mydir+"/Data"
-plot_dir=mydir+"/Plots"
+#plot_dir=mydir+"/Plots"
 if os.path.exists(data_dir)==False: os.mkdir(data_dir)
-if os.path.exists(plot_dir)==False: os.mkdir(plot_dir)
+#if os.path.exists(plot_dir)==False: os.mkdir(plot_dir)
 
 
 
@@ -156,11 +157,11 @@ cell_data_geom=np.transpose(np.vstack((cell_id, cell_perimeters, cell_areas,\
 geom_df=pd.DataFrame(cell_data_geom, columns=geom_data_names)
 
 #write data frames and summary stats
-cell_df.to_csv(data_dir + '/'+edges_name+'_cell_data_all_Gamma_'+str(Gamma)+'_Lambda_'+str(Lambda)+'.csv', index=False)
-cell_df.iloc[:,1:].describe().to_csv(data_dir + '/'+edges_name+'_summary_stats_Gamma_'+str(Gamma)+'_Lambda_'+str(Lambda)+'.csv')
+cell_df.to_csv(data_dir + '/'+exp_id+'_cell_data_all_Gamma_'+str(Gamma)+'_Lambda_'+str(Lambda)+'.csv', index=False)
+cell_df.iloc[:,1:].describe().to_csv(data_dir + '/'+exp_id+'_summary_stats_Gamma_'+str(Gamma)+'_Lambda_'+str(Lambda)+'.csv')
 
-geom_df.to_csv(data_dir + '/'+edges_name+'_cell_data_geometry.csv', index=False)
-geom_df.iloc[:,1:].describe().to_csv(data_dir + '/'+edges_name+'_geometry_summary_stats.csv')
+geom_df.to_csv(data_dir + '/'+exp_id+'_cell_data_geometry.csv', index=False)
+geom_df.iloc[:,1:].describe().to_csv(data_dir + '/'+exp_id+'_geometry_summary_stats.csv')
 
 fileio.write_global_data(global_stress, monolayer_energy, data_dir,edges_name) #write global data
 

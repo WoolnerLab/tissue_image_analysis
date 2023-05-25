@@ -237,13 +237,13 @@ def angle_hist(plot_val, plot_name, savedir, bins_number, theta_lim, edges_name)
     plt.clf()
     width = np.pi / bins_number
     ax = plt.subplot(1, 1, 1, projection='polar')
-    bars = ax.bar(bins[:bins_number], n, width=width, bottom=0.0, align='edge',color='blue', edgecolor='k')
+    bars = ax.bar(bins[:bins_number], n, width=width, bottom=0, align='edge',color='blue', edgecolor='k')
     for bar in bars:
         bar.set_alpha(0.5)
         
     ax.set_xticks(bins)
     ax.set_thetamin(0)
-    ax.set_thetamax(theta_lim)
+    ax.set_thetamax(180)
     ax.yaxis.grid(False)
     ax.set_xlabel('Frequency')
     ax.set_title(plot_name)
