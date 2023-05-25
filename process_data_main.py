@@ -17,8 +17,6 @@ import pandas as pd
 
 from datetime import datetime
 
-
-
 from utils import fileio
 from utils import handtrace
 from utils import matrices
@@ -35,7 +33,7 @@ output_dir=CURRENT_DIR+'/Output/'
 #User Input
 #########################
 
-conf_file=input_dir+'20230426_2_NT_GFPTub-ControlMO_bf_0p5_MP_fr1_trace_junctions.csv' #name of config file
+conf_file=input_dir+'20191122_1_EJ_GFPTub-CheHis_uu_0p5_MP_fr61_trace_conf.csv' #name of config file
 
 #########################
 #Constant variables
@@ -56,7 +54,7 @@ ExperimentFlag = 1
 edges_name,t_min, pixel_size, micron_size = fileio.read_conf(conf_file)
 exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[7]
 t=t_min*60.0
-stretch_type=edges_name.split('_')[3][-1]
+stretch_type=edges_name.split('_')[4][-1]
 
 #make directories to output to
 
@@ -255,8 +253,8 @@ t,A,C,R,cell_centres,axisLength,plot_dir,edges_name,ExperimentFlag,0, 'png')
 # visualise.graphNetworkColourBinary('Magnitude of effective pressure Binary',abs(cell_P_eff),'yellow','lemonchiffon',np.median(abs(cell_P_eff)),1,0,\
 # t,A,C,R,cell_centres,cell_P_eff,major_stress_axis,axisLength,plot_dir,edges_name,ExperimentFlag, 'png')
 
-# visualise.graphNetworkColourBinary('Effective Pressure Binary',cell_P_eff,'red','blue',0,1,0,\
-# t,A,C,R,cell_centres,cell_P_eff,major_stress_axis,axisLength,plot_dir,edges_name,ExperimentFlag, 'png')
+visualise.graphNetworkColourBinary('Effective Pressure Binary',cell_P_eff,'red','blue',0,1,0,\
+t,A,C,R,cell_centres,cell_P_eff,major_stress_axis,axisLength,plot_dir,edges_name,ExperimentFlag, 'png')
 
 # #Shear Stress
 # visualise.graphNetworkColourBinary('Cell Shears Binary',cell_shears,'darkseagreen','honeydew',np.mean(cell_shears),0,0,\

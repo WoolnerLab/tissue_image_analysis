@@ -51,7 +51,7 @@ ExperimentFlag = 1
 edges_name,t_min, pixel_size, micron_size = fileio.read_conf(conf_file)
 exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[7]
 t=t_min*60.0
-stretch_type=edges_name.split('_')[3][-1]
+stretch_type=edges_name.split('_')[4][-1]
 
 #make directories to output to
 if os.path.exists(output_dir+edges_name.split('_trace')[0])==False: os.mkdir(output_dir+edges_name.split('_trace')[0])
