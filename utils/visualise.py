@@ -115,7 +115,7 @@ t,A,C,R,cell_centres,axisLength,savedir,edges_name,ExperimentFlag, NumberFlag, f
     plt.close()
 
 
-def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,CutPoint,MajorAxisIndicator,CellCentreIndicator,t,A,C,R,cell_centres,cell_P_eff,major_axis,axisLength,savedir,edges_name,ExperimentFlag, file_type):
+def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,CutPoint,MajorAxisIndicator,CellCentreIndicator,t,A,C,R,cell_centres,cell_P_eff,major_axis,axisLength,savedir,edges_name,ExperimentFlag, NumberFlag, edge_colour,file_type):
 
     """
     Plots of cell network where cells are coloured in a binary fashion
@@ -140,6 +140,8 @@ def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,
     savedir (string): location to save plot
     edges_name (string): filename of trace
     ExperimentFlag (bool): sets axis length based on experiment or sims (set to 1)
+    NumberFlag (bool): If 1 then number of cell will be added to each plot.
+    edge_colour (string): colour to plot edges
     file_type (string): file type to save image as
     """
     N_c=np.shape(C)[0]
@@ -167,10 +169,10 @@ def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,
 
 
     ### For binary effective pressure
-    p_blue = PatchCollection(patchesBlue,alpha = 0.5)
+    p_blue = PatchCollection(patchesBlue,alpha = 1)
     p_blue.set_facecolor(ColourLow)
     ax.add_collection(p_blue)
-    p_red = PatchCollection(patchesRed,alpha = 0.7)
+    p_red = PatchCollection(patchesRed,alpha = 1)
     p_red.set_facecolor(ColourHigh)
     ax.add_collection(p_red)
 
@@ -180,7 +182,10 @@ def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,
 
     #Plot Edges
     for j in range(0,N_e):
-        ax.plot([beg_edge[j,0],end_edge[j,0]],[beg_edge[j,1],end_edge[j,1]],'black',alpha=1.0,linestyle ='-',linewidth=1.0)
+        ax.plot([beg_edge[j,0],end_edge[j,0]],[beg_edge[j,1],end_edge[j,1]],edge_colour,alpha=1.0,linestyle ='-',linewidth=1.0)
+    if NumberFlag==1:
+        for i in range(0,N_c):
+            plt.text(cell_centres[i][0], cell_centres[i][1], str(i),fontsize= 5,color='w', horizontalalignment='center', verticalalignment='center')
 
     #Plot the centre of cell, the EffectivePressure, the cell number
     for i in range(0,N_c):
@@ -210,9 +215,11 @@ def graphNetworkColourBinary(CellPropertyName,CellProperty,ColourHigh,ColourLow,
     #plt.gcf()
     plt.gca().set_aspect('equal')
     #Save Figure
-    fig.savefig(savedir + "/"+edges_name+"_" + CellPropertyName+"."+ file_type)
+    fig.savefig(savedir + "/"+edges_name+"_" + CellPropertyName+"."+ file_type, dpi=300)
 
     plt.close()
+
+
 
 def angle_hist(plot_val, plot_name, savedir, bins_number, theta_lim, edges_name):
     """
