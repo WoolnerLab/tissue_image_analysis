@@ -175,3 +175,15 @@ def get_shape_tensor(R,C,cell_edge_count,cell_centres,cell_P_eff=False):
         return circularity,major_shape_axis_store,major_shape_axis_alignment,major_stress_axis_store,major_stress_axis_alignment
     else:
         return circularity,major_shape_axis_store,major_shape_axis_alignment
+    
+def get_nearest_neighbours(B, n):
+    nn=np.unique(np.where(B1[:,np.where(B1[n]!=0)[0]]!=0)[0])
+    nn=nn[nn!=n]
+    return(nn)
+
+def get_all_nn(B):
+    all_nn=[]
+    for i in range(len(B)):
+        nn=get_nearest_neighbours(B,i)
+        all_nn.append(nn)
+    return (all_nn)
