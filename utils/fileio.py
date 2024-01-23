@@ -42,6 +42,15 @@ def read_conf(filename):
 
     return  edges_name, t_min, pixel_size, micron_size
 
+def read_conf_line(line):
+    "split line from conf file into info"
+    conf_data=line.split(',')
+    edges_name=conf_data[0] # file name excluding .tif
+    t_min=float(conf_data[1]) #time in minutes of image
+    pixel_size=float(conf_data[2]) #from raw image
+    micron_size=float(conf_data[3]) #from raw image
+
+    return  edges_name, t_min, pixel_size, micron_size
 
 def write_parameters(savedir,edges_name,stretch_type,t,pixel_size, micron_size,Gamma, Lambda, pref_area, area_scaling_gradient):
     """write parameters used to file for reference"""

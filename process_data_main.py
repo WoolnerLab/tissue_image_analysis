@@ -11,6 +11,7 @@ Alex Nestor-Bergmann - image detection code
 """
 import glob
 import os
+import csv
 
 import numpy as np
 import pandas as pd
@@ -26,15 +27,19 @@ from utils import visualise
 
 #establish directory structure
 CURRENT_DIR = os.getcwd()
-input_dir=CURRENT_DIR+'/Input/'
-output_dir=CURRENT_DIR+'/Output/'
-
+#input_dir=CURRENT_DIR+'/Input/'
+input_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\Incremental\\20231005_1_IP_GFPCAAX-CheHis_us_8p6_SP\\5min_int/'
+#output_dir=CURRENT_DIR+'/Output/'
+output_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track/Output/'
 #########################
 #User Input
 #########################
-c_files=sorted(glob.glob(input_dir+'20230203_1_*_us_*_*.csv'))
-for f in c_files:
-    conf_file=f #name of config file
+c_file=sorted(glob.glob(input_dir+'*_trace_conf.csv'))[0]
+f = open(c_file,'r')
+lines = f.read().splitlines()[1:]
+f.close()
+for l in lines:
+    #conf_file=f #name of config file
 
     #########################
     #Constant variables
@@ -52,7 +57,7 @@ for f in c_files:
     #########################
 
     #read in conf file
-    edges_name,t_min, pixel_size, micron_size = fileio.read_conf(conf_file)
+    edges_name,t_min, pixel_size, micron_size = fileio.read_conf_line(l)
     exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[7]
     t=t_min*60.0
     stretch_type=edges_name.split('_')[4][-1]
@@ -74,7 +79,7 @@ for f in c_files:
     ##############################
     #Get cell geometry
     ##############################
-
+   
     #make sure pixel size is size of tif not of trace as some have borders
     R=R*(micron_size/pixel_size)
 
@@ -262,3 +267,5 @@ for f in c_files:
     # #Shear Stress
     # visualise.graphNetworkColourBinary('Cell Shears Binary',cell_shears,'darkseagreen','honeydew',np.mean(cell_shears),0,0,\
     # t,A,C,R,cell_centres,cell_P_eff,major_stress_axis,axisLength,plot_dir,edges_name,ExperimentFlag, 'png')
+
+    visualise.graphNetworkColourBinary('green',cell_df['cell_id'],'black','black',0.0,0,0,t,A,C,R,cell_centres,cell_P_eff,major_stress_axis,axisLength,plot_dir,edges_name,ExperimentFlag, 0, 'green','png')
