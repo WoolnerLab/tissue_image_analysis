@@ -111,7 +111,7 @@ t,A,C,R,cell_centres,axisLength,savedir,edges_name,ExperimentFlag, NumberFlag, f
     ax.set_title("t = {}s, {}".format(t,plot_name))
 
     #Save Figure
-    plt.savefig(savedir + "/"+edges_name+"_" + plot_name+"."+ file_type)
+    fig.savefig(savedir + "/"+edges_name+"_" + plot_name+"."+ file_type)
     plt.close()
 
 

@@ -37,6 +37,9 @@ def run_trace(edges_name, input_dir):
     Nc=2+Ne-Nv-1 #Euler characteristic for a planar graph minus the outside infinite face.
     print(Nv, Ne, Nc)
 
+    R=np.transpose(np.vstack((n_coords[:,1],n_coords[:,0])))
+
+
     A=segmentation_hand.construct_ev_incidence_matrix(edge_verts, Ne, Nv)
     G=segmentation_hand.construct_adjacency_matrix(A)
     cells=segmentation_hand.get_cycles(G, 12)
@@ -46,13 +49,12 @@ def run_trace(edges_name, input_dir):
     cell_edges=segmentation_hand.assign_edges_to_cells(cells, edge_verts, Ne)
 
 
-    B=segmentation_hand.construct_ce_incidence_matrix(cells,edge_verts,cell_edges, Nc, Ne)
+    B=segmentation_hand.construct_ce_incidence_matrix(cells,edge_verts,cell_edges, Nc, Ne, R)
 
     if len(np.where(B@A!=0)[0])!=0: print("Matrix generation error, check A and B")
         
     C=0.5*(abs(B)@abs(A))
 
-    R=np.transpose(np.vstack((n_coords[:,1],n_coords[:,0])))
 
 
     return edge_verts,cells, cell_edges, A, B, C, R, image0

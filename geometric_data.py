@@ -25,7 +25,7 @@ from source import setup_points
 from source import graham_scan
 
 from utils import fileio
-from utils import trace
+from utils import handtrace
 from utils import matrices
 from utils import geometry
 from utils import mechanics
@@ -34,10 +34,12 @@ from utils import visualise
 #establish directory structure
 CURRENT_DIR = os.getcwd()
 input_dir=CURRENT_DIR+'/Input/'
-output_dir=CURRENT_DIR+'/Output/Unstretched_Geometry/'
+output_dir=CURRENT_DIR+'/Output/CdhFL/'
 
-files=sorted(glob.glob(input_dir+'20191205_0s_cp.csv'))
+
+files=sorted(glob.glob(input_dir+'20161130_2_GG_CadFL-GFPtub-CheHis_uf_8p6*conf.csv'))
 for file in files:
+
     #########################
     #User Input
     #########################
@@ -60,33 +62,23 @@ for file in files:
     #########################
 
     #read in conf file
-    exp_date, exp_ID, trace_type, nuclei_exist, edges_name, nuclei_name, stretch_type,t, pixel_size, micron_size = fileio.read_conf(conf_file)
-
+    edges_name,t_min, pixel_size, micron_size = fileio.read_conf(conf_file)
+    exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[7]
+    t=t_min*60.0
+    stretch_type=edges_name.split('_')[4][-1]
     #make directories to output to
 
-    save_dir, trace_dir, matrix_dir, data_dir, plot_dir = fileio.setup_directories(output_dir, exp_ID)
+    save_dir, trace_dir, matrix_dir, data_dir, plot_dir = fileio.setup_directories(output_dir, edges_name)
 
     ##############################
-    #Run traces
+    #Run traces and construct matrices
     ##############################
-    print("Exp_ID = ", exp_ID)
     print("Extracing trace data")
-    edgeToCell, centroidsX, centroidsY,  eptm, edgeNumber, cellEdges=trace.run_trace(edges_name, nuclei_name,nuclei_exist, input_dir)
-    fileio.write_cell_data(trace_dir,cellEdges, centroidsX, centroidsY, eptm)
-    trace.check_trace_plot(save_dir, eptm)
-
-    ##############################
-    #Construct Matrices
-    ##############################
-    print("Constructing Matrices")
-    unique_edges = np.asarray(eptm.global_edges) #List of edges with vertex indices
-    unique_vertices = np.asarray(eptm.global_vertices) #list of vertices with coords
-    cX = np.asarray(centroidsX)
-    cY = np.asarray(centroidsY)
-
-    A, B, C, R = matrices.get_matrices(unique_edges,unique_vertices,cellEdges, cX, cY)
-
-    fileio.write_matrices(matrix_dir, A, B, C, R)
+    edge_verts,cells, cell_edges, A, B, C, R, image0 = handtrace.run_trace(edges_name, input_dir)
+    fileio.write_cell_data(trace_dir,edge_verts,cells, cell_edges, exp_id)
+    handtrace.check_trace_plot(save_dir,image0, cells, R, edges_name)
+    print("Writing Matrices")
+    fileio.write_matrices(matrix_dir, A, B, C, R, exp_id)
 
     ##############################
     #Get cell geometry
@@ -117,20 +109,19 @@ for file in files:
     max_edge_length=edges.max(axis=1).data
     mean_edge_length=edges.mean(axis=1).data
     cell_id=np.linspace(0, N_c-1,N_c)
-    cell_circularity, major_axis, major_axis_alignment=geometry.get_shape_tensor(R,C,cell_edge_count,cell_centres)
+    #cell_circularity, major_axis, major_axis_alignment=geometry.get_shape_tensor(R,C,cell_edge_count,cell_centres)
+    cell_circularity, major_shape_axis, major_shape_axis_alignment=geometry.get_shape_tensor(R,C,cell_edge_count,cell_centres, [])
     shape_parameter = cell_perimeters/(np.sqrt(cell_areas))
 
 
-    #combine data into a dataframe object
-    data_names=['cell_id', 'cell_perimeter_microns', 'cell_area_microns', 'shape_parameter', 'circularity', 'cell_edge_count','major_axis_alignment_rads','max_edge_length', 'min_edge_length', 'mean_edge_length']
-    cell_data=np.transpose(np.vstack((cell_id, cell_perimeters, cell_areas, shape_parameter, \
-                cell_circularity, cell_edge_count, major_axis_alignment,max_edge_length, min_edge_length, mean_edge_length )))
+    geom_data_names=['cell_id', 'cell_perimeter_microns', 'cell_area_microns', 'shape_parameter', 'circularity', 'cell_edge_count', \
+    'major_shape_axis_alignment_rads']
+    cell_data_geom=np.transpose(np.vstack((cell_id, cell_perimeters, cell_areas,\
+    shape_parameter, cell_circularity, cell_edge_count, major_shape_axis_alignment)))
 
-    cell_df=pd.DataFrame(cell_data, columns=data_names) 
-
-    fileio.write_data(cell_df, data_dir, exp_ID) #write calculated data
-
-    fileio.write_summary_stats(cell_df, data_dir, exp_ID) #write summary stats
+    geom_df=pd.DataFrame(cell_data_geom, columns=geom_data_names)
+    geom_df.to_csv(data_dir + '/'+exp_id+'_cell_data_geometry.csv', index=False)
+    geom_df.iloc[:,1:].describe().to_csv(data_dir + '/'+exp_id+'_geometry_summary_stats.csv')
 
 
 
@@ -138,17 +129,14 @@ for file in files:
     #Plot
     ##############################
     print("Generating Plots")
-    ### Distributions ###
+    ### Distributions ###      
 
-    #Summary Histograms for continuous data 
-    visualise.plot_summary_hist(cell_df, plot_dir, exp_ID)
+    visualise.plot_summary_hist(geom_df,'geom_data', plot_dir, edges_name)
 
     #discrete data
-    visualise.plot_cell_sides(cell_df, "Number_of_Sides", plot_dir, exp_ID)
+    visualise.plot_cell_sides(geom_df, "Number_of_Sides", plot_dir, edges_name)
 
     #angle histogram
-    visualise.angle_hist(cell_df['major_axis_alignment_rads'], "Major Axis Alignment", plot_dir, 6, 90 , exp_ID)
-
-
-    visualise.graphNetworkColourBinary('Cell Elongation Binary',1.0-cell_circularity,'crimson','pink',2.0/3.0,1,0,\
-    t,A,C,R,cell_centres,np.ones(N_c),major_axis,micron_size,plot_dir,exp_ID,ExperimentFlag, 'png')
+    visualise.angle_hist(geom_df['major_shape_axis_alignment_rads'], "Major Shape Axis Alignment", plot_dir, 12, 180 , edges_name)
+    axisLength = micron_size + 0.5
+    visualise.graphNetworkColourBinary('Cell_id',geom_df['cell_id'],'black','black',0.0,0,0,t,A,C,R,cell_centres,cell_areas,major_shape_axis,axisLength,plot_dir,edges_name,ExperimentFlag, 1, 'blue','png')

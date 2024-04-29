@@ -28,7 +28,7 @@ from utils import visualise
 #establish directory structure
 CURRENT_DIR = os.getcwd()
 #input_dir=CURRENT_DIR+'/Input/'
-input_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\Incremental\\20231005_1_IP_GFPCAAX-CheHis_us_8p6_SP\\5min_int/'
+input_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\unstretched/20231019_1_IP_GFPCAAX-CheHis_uu_0p5_SP/5min_int/traces/'
 #output_dir=CURRENT_DIR+'/Output/'
 output_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track/Output/'
 #########################
@@ -223,9 +223,9 @@ for l in lines:
     # visualise.graphNetworkColorBar('Effective Pressure',cell_P_eff,'bwr',1,-1.0,1.0,\
     # t,A,C,R,cell_centres,axisLength,plot_dir,edges_name,ExperimentFlag,0, 'png')
 
-    # # Shear Stress
-    # visualise.graphNetworkColorBar('Shear Stress',cell_shears,'plasma',-1,0.0,0.7,\
-    # t,A,C,R,cell_centres,axisLength,plot_dir,edges_name,ExperimentFlag,0, 'png')
+    # Shear Stress
+    visualise.graphNetworkColorBar('Shear Stress',cell_shears,'plasma',-1,0.0,0.7,\
+    t,A,C,R,cell_centres,axisLength,plot_dir,edges_name,ExperimentFlag,0, 'png')
 
     # # Cell Tension and Pressure
     # visualise.graphNetworkColorBar('Cell Tension',cell_tensions,'inferno',-1,0.0,0.5,\
