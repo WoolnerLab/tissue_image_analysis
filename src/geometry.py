@@ -7,10 +7,10 @@ Functions to calculate spatial quatities of cells network
 """
 
 import numpy as np
+import shapely 
 
 from scipy import optimize, linalg
 
-from utils import mechanics
 
 
 def get_tangents(A,R):
@@ -78,7 +78,7 @@ def get_perimeters(A,B,R):
 
 def get_areas_old(A, B, R):
     """
-    calculate cell areas Legacy function in terms of matrices
+    calculate cell areas (Legacy function in terms of matrices)
     """
     N_c=np.shape(B)[0]
     N_e=np.shape(B)[1]
@@ -107,77 +107,46 @@ def get_mean_area(cell_areas):
 
     mean_cell_area = np.mean(cell_areas)
     if mean_cell_area <0: mean_cell_area*=-1
-    np.savetxt('cell_areas.txt',cell_areas)
     return mean_cell_area
 
-def get_pref_area(cell_areas, gamma, L, L_0, mean_cell_area):
+# def get_pref_area(cell_areas, gamma, L, L_0, mean_cell_area):
+#     """
+#     Uses Newtons method to find the value of the dimensional area when the global stress is zero.
+#     """
+#     sol = optimize.root_scalar(mechanics.GlobalStress,args=(cell_areas, gamma, L, L_0),  x0=mean_cell_area, fprime=mechanics.derivative_GlobalStress, method='newton')
+#     pref_area=sol.root
+#     return pref_area
+
+def get_shape_tensors(R,cells, cell_edge_count, cell_centres):
     """
-    Uses Newtons method to find the value of the dimensional area when the global stress is zero.
+    calculate the shape tensor
     """
-    sol = optimize.root_scalar(mechanics.GlobalStress,args=(cell_areas, gamma, L, L_0),  x0=mean_cell_area, fprime=mechanics.derivative_GlobalStress, method='newton')
-    pref_area=sol.root
-    return pref_area
 
+    N_c=len(cells)
+    N_v=len(R)
+    R_alpha=[R[cells[x]] - cell_centres[x] for x in range(N_c)] #R ref frame of cell
+    S=np.array([(R_alpha[i].T@R_alpha[i])/cell_edge_count[i] for i in range(N_c)])
 
-def get_shape_tensor(R,C,cell_edge_count,cell_centres,cell_P_eff=False):
-    """
-    celculate the shape tensor and get principal axis and circularity
-    """
-    N_c=np.shape(C)[0]
-    N_v=np.shape(C)[1]
+    return S
 
-    circularity =np.zeros((N_c))
-    eigen_val_store = np.zeros((N_c,2))
-    eigen_vector_store1 = np.zeros((N_c,2))
-    eigen_vector_store2 = np.zeros((N_c,2))
-    major_shape_axis_store = np.zeros((N_c,2))
-    major_shape_axis_alignment = np.zeros((N_c))
-    major_stress_axis_store = np.zeros((N_c,2))
-    major_stress_axis_alignment = np.zeros((N_c))
+def get_circularity(S):
+    "calculate circularity"
+    evals=np.sort(np.linalg.eigvals(S), axis=1)
+    circ=np.abs(evals[:,0]/evals[:,1])
+    return circ
+    
 
-    for i in range(N_c):
-        shape_tensor = np.zeros((2,2))
-        for k in range(N_v):
-            if C[i,k]==1.0:
-                shape_tensor += (1.0/cell_edge_count[i])*np.outer((R[k]-cell_centres[i]),(R[k]-cell_centres[i]))
+def get_shape_axis_angle(S):
+    N_c=len(S)
+    evecs, evals=np.linalg.eig(S)
+    sorted_evecs=np.array([evecs[x][np.argsort(evals, axis=1)[x]] for x in range(N_c)])
+    long_axis=sorted_evecs[:,1]
 
-        eigvals, eigvecs = linalg.eig(shape_tensor)
-        eigvals = eigvals.real
-        if eigvals[0] > eigvals[1]:
-            eigen_val_store[i,0]= eigvals[0]
-            eigen_val_store[i,1]= eigvals[1]
-            eigen_vector_store1[i] = eigvecs[:,0]
-            eigen_vector_store2[i] = eigvecs[:,1]
+    long_axis_angle = np.arctan2(long_axis[:,1],long_axis[:,0])
+    long_axis_angle=np.where(long_axis_angle<0, long_axis_angle+np.pi, long_axis_angle)
 
-        else:
-            eigen_val_store[i,0]= eigvals[1]
-            eigen_val_store[i,1]= eigvals[0]
-            eigen_vector_store2[i] = eigvecs[:,0]
-            eigen_vector_store1[i] = eigvecs[:,1]
+    return long_axis_angle
 
-        major_shape_axis_store[i] = eigen_vector_store1[i]
-
-        
-        major_shape_axis_alignment[i] = np.arctan2(major_shape_axis_store[i][1]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)),major_shape_axis_store[i][0]/(np.sqrt(major_shape_axis_store[i][0]**2+major_shape_axis_store[i][1]**2)))
-        if major_shape_axis_alignment[i]<0:
-            major_shape_axis_alignment[i] +=np.pi
-
-        circularity[i] = abs(eigen_val_store[i][1]/eigen_val_store[i][0])
-
-
-        if len(cell_P_eff)>1:
-            if cell_P_eff[i]<0:
-                major_stress_axis_store[i] = eigen_vector_store2[i]
-            else:
-                major_stress_axis_store[i] = eigen_vector_store1[i]
-            
-            major_stress_axis_alignment[i] = np.arctan2(major_stress_axis_store[i][1]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)),major_stress_axis_store[i][0]/(np.sqrt(major_stress_axis_store[i][0]**2+major_stress_axis_store[i][1]**2)))
-            if major_stress_axis_alignment[i]<0:
-                major_stress_axis_alignment[i] +=np.pi
-    if len(cell_P_eff)>1:
-        return circularity,major_shape_axis_store,major_shape_axis_alignment,major_stress_axis_store,major_stress_axis_alignment
-    else:
-        return circularity,major_shape_axis_store,major_shape_axis_alignment
     
 def get_nearest_neighbours(B, n):
     nn=np.unique(np.where(B[:,np.where(B[n]!=0)[0]]!=0)[0])
@@ -193,7 +162,6 @@ def get_all_nn(B):
 
 def get_dAdr(A, nij):
     dAdr=0.5*np.transpose(np.tensordot(abs(A).T, np.transpose(nij, (1, 0, 2)), axes=1), (1,0,2))
-
     return dAdr
 
 def get_dLdr(A, B, tangents, edge_lengths):
@@ -204,3 +172,56 @@ def get_dLdr(A, B, tangents, edge_lengths):
         diagthat[j,j]=that[j] 
     dLdr=np.tensordot(abs(B),np.einsum('ijk, jl -> ilk',diagthat, A, optimize='optimal'), axes=1)
     return dLdr
+
+def get_nn_shells(B):
+    """
+    Get matrix of shells of nearest neighbours
+    """
+
+    N_c=np.shape(B)[0]
+
+    all_nn=[]
+    for i in range(N_c):
+        nn=[]
+        all_cells=[]
+        nn.append([i])
+        all_cells.append(i)
+
+        shell1=list(np.unique(np.where(B[:,np.where(B[i,:]!=0)[0]]!=0)[0])) #1st shell of neighbouring cells
+        shell1.remove(i)
+        
+        nn.append(shell1)
+        all_cells.extend(shell1)
+
+        while len(all_cells) < N_c: 
+            shell=[]
+            for n in nn[-1]: #for each cell in previous shell find their nns not in previous cell
+                nn_i=np.unique(np.where(B[:,np.where(B[n,:]!=0)[0]]!=0)[0])
+                shell.append(set(nn_i).difference(all_cells))
+            shell=set([x for xs in shell for x in xs]) #get unique cells
+            nn.append(list(shell))
+            all_cells.extend(list(shell))
+        
+        all_nn.append(nn)
+        
+    shell_matrix=np.array([[[x for x, xs in enumerate(all_nn[m]) if n in xs][0] for n in range(N_c)] for m in range(N_c)])
+
+
+    return shell_matrix
+
+def get_Q_J(tangents, edge_lengths, B,cell_perimeters):
+    N_c=np.shape(B)[0] #number of cells
+    N_e=np.shape(B)[1] #number of edges
+
+    Q=np.zeros((N_c,2,2))
+    J=np.zeros((N_c,2,2))
+    for i in range(N_c):
+        for j in range(N_e):
+            if abs(B[i,j])==1:#makes sure we are in the cell i
+                that=(tangents[j]/edge_lengths[j])
+                Q[i]+=abs(B)[i,j]*edge_lengths[j]*np.outer(that,that)
+        Q[i]=Q[i]/(cell_perimeters[i])
+
+        J[i]=Q[i]-0.5*np.identity(2)
+    
+    return Q,J
