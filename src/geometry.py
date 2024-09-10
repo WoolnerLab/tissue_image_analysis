@@ -133,14 +133,13 @@ def get_circularity(S):
     "calculate circularity"
     evals=np.sort(np.linalg.eigvals(S), axis=1)
     circ=np.abs(evals[:,0]/evals[:,1])
-    return circ
+    return circ, evals
     
 
 def get_shape_axis_angle(S):
     N_c=len(S)
-    evecs, evals=np.linalg.eig(S)
-    sorted_evecs=np.array([evecs[x][np.argsort(evals, axis=1)[x]] for x in range(N_c)])
-    long_axis=sorted_evecs[:,1]
+    evals, evecs=np.linalg.eig(S)
+    long_axis=np.array([evecs[x][:,evals[x].argmax()] for x in range(N_c)])
 
     long_axis_angle = np.arctan2(long_axis[:,1],long_axis[:,0])
     long_axis_angle=np.where(long_axis_angle<0, long_axis_angle+np.pi, long_axis_angle)
