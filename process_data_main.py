@@ -33,7 +33,7 @@ output_dir=CURRENT_DIR+'/Output/'
 #User Input
 #########################
 
-conf_file=input_dir+'20191122_1_EJ_GFPTub-CheHis_uu_0p5_MP_fr61_trace_conf.csv' #name of config file
+conf_file=input_dir+'example_conf_file.csv' #name of config file
 
 #########################
 #Constant variables
@@ -52,10 +52,11 @@ ExperimentFlag = 1
 
 #read in conf file
 edges_name,t_min, pixel_size, micron_size = fileio.read_conf(conf_file)
-exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[7]
+#exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[7]
+exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]#+'_'+edges_name.split('_')[2]
 t=t_min*60.0
-stretch_type=edges_name.split('_')[4][-1]
-
+#stretch_type=edges_name.split('_')[4][-1]
+stretch_type='u'
 #make directories to output to
 
 save_dir, trace_dir, matrix_dir, data_dir, plot_dir = fileio.setup_directories(output_dir, edges_name)

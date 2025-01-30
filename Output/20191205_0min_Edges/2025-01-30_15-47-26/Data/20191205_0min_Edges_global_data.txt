@@ -1,0 +1,2 @@
+# global_stress, monolayer_energy 
+1.0942455328028125e-16, 613.2729997096488
