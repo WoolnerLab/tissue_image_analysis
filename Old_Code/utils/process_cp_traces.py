@@ -23,7 +23,7 @@ from utils import handtrace
 from utils import matrices
 from utils import geometry
 from utils import mechanics
-from utils import visualise
+from . import visualise
 
 folder='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\unstretched\\20231019_1_IP_GFPCAAX-CheHis_uu_0p5_SumP\\5min_int'
 files = glob(folder+'\\*_trace.tif')

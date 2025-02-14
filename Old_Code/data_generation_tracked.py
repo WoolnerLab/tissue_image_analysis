@@ -14,7 +14,7 @@ from utils import fileio
 from utils import matrices
 from utils import geometry
 from utils import mechanics
-from utils import visualise
+from . import visualise
 
 
 #establish directory structure
