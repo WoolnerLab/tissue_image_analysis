@@ -103,7 +103,7 @@ def get_cycles(G, n_threshold, R):
          if all([len(set(i).intersection(x))<3 for x in cells]):
                 cells.append(i)
                 
-                
+    #Find make cell orientation uniform            
     cell_orientation=[shapely.Polygon(R[cells[x]]).exterior.is_ccw for x in range(len(cells))]
     cells=[cells[x][::-1] if cell_orientation[x] else cells[x] for x in range(len(cells))]
 
@@ -130,9 +130,8 @@ def construct_ce_incidence_matrix(cells,edge_verts, Nc, Ne, A):
 
 def get_matrices(trace_file):
     
-    trace_file='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Parameter_Inference\\Traces/20231024_2_IP_GFPCAAX-CheHis_uu_0p5_MP_fr6_trace.tif'
     #skeletonise and segment edges
-    im, data=skeletonise(trace_file, cp=False)
+    im, data=skeletonise(trace_file)
     #remove spiderlegs/contractible branches
     edge_verts, n_coords=extract_edges_verts(data)
 
@@ -149,7 +148,7 @@ def get_matrices(trace_file):
     #construct graph from edgelist
     G=nx.Graph([tuple(edge_verts[x]) for x in range(len(edge_verts))])
 
-    cells=get_cycles(edge_verts, 12, R)
+    cells=get_cycles(G, 12, R)
 
     if len(cells)!=Nc: print("Nc-len(cells) = ", Nc-len(cells))
     if set([x for xs in cells for x in xs]).difference(set(range(Nv)))!=set(): print("hanging vertex, check spider legs")
@@ -159,5 +158,8 @@ def get_matrices(trace_file):
     if len(np.where(B@A!=0)[0])!=0: print("Matrix generation error, check A and B")
         
     C=0.5*(abs(B)@abs(A))
-    return R, A, B, C, G, cells, edge_verts
+
+    cell_edges=[np.where(B[x, :]!=0) for x in range(len(B))]
+
+    return R, A, B, C, G, cells, edge_verts, cell_edges
 
