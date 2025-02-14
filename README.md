@@ -1,13 +1,26 @@
 # tissue_image_analysis
 Created 04/02/2023 by Natasha Cowley.
-
-This is the cleanned up analysis code currently only for manual traces. Development of the image analysis algorithm to work with cellpose traces is ongoing.
+Updated 14/02/2025
 
 ## Setup and Running:
 
-For this itteration of the code we need traces with spider legs and dots (nuclei).
+For this itteration of the code we need traces with spider legs (vertices at edge of trace need 3 edges coming out of them to be picked up by the algorithm). Traces should also be vertically inverted.
 
-Cell traces and 'nuclei' files should be placed in the input file. For each trace a configuration file should be filled out. This is a .csv file with the following fields:
+Files should be names according to the established naming convention e.g.
+
+'20231019_1_IP_GFPCAAX-CheHis_uu_0p5_SP_trace_conf.csv'
+
+1. Experiment date
+2. Experiement number on that day
+3. Initials
+4. What cells are injected or treated with seperated by a dash
+5. stretch axis (u,b) stretch type(u,f,s,c) 
+6. stretch amount
+7. projection type
+
+
+
+Cell traces should be placed in the input file. For each experiment a configuration file should be filled out, with different timepoints on seperate lines. This is a .csv file with the following fields:
 
 
  - **Edges_Name**: the name of the trace file without extension.
