@@ -105,7 +105,7 @@ for l in lines:
         fileio.write_pref_area(data_dir,input_dir, edges_name, A_0dim)
     else:
         A_0dim=fileio.read_pref_area(input_dir, edges_name)
-        A_0dim*=((1-area_scaling*t)*A_0dim)
+        A_0dim*=(1-area_scaling*t) #scaling stretched cells from Emma's thesis to be revisited
 
     R_nd=R/(np.sqrt(A_0dim))
     areas_nd=cell_areas/A_0dim
