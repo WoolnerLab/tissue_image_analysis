@@ -7,7 +7,7 @@ Functions to calculate mechanical properties of cells network
 """
 
 import numpy as np
-import geometry
+from src import geometry
 
 def get_P_eff(A, Gamma, L, L_0):
     """Calculate Effective pressure of cell"""
@@ -59,3 +59,9 @@ def get_monolayer_energy(A, L, L_0):
     Calculate total energy for the monolayer
     """
     return 0.5*np.sum((A-1)**2+(L-L_0)**2)
+
+def get_stress_angle(P_eff, shape_angle):
+    #if P_eff < 0 get perpendicular angle
+    stress_angle=np.where(P_eff<0, shape_angle-np.pi/2, shape_angle)
+    stress_angle=np.where(stress_angle<0, stress_angle+np.pi, stress_angle)
+    return stress_angle
