@@ -19,16 +19,16 @@ from src import visualise
 
 CURRENT_DIR = os.getcwd()
 input_dir=CURRENT_DIR+'/Input/'
-#input_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\100cells/'
 
+if os.path.exists(CURRENT_DIR+'/Output/')==False: os.mkdir(CURRENT_DIR+'/Output/')
 output_dir=CURRENT_DIR+'/Output/'
-#output_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\100cells/'
+
 
 #########################
 #User Input
 #########################
 
-c_file=sorted(glob(input_dir+'*_conf.csv'))[0]
+c_file=sorted(glob(input_dir+'*_conf.csv'))[0] #conf file name goes here
 f = open(c_file,'r')
 lines = f.read().splitlines()[1:]
 f.close()
@@ -66,8 +66,10 @@ for l in lines:
     # Process trace and get matrices
     #################################
     R, A, B, C, G, cells, edge_verts, cell_edges=trace_processing.get_matrices(trace_file)
-    shell_matrix=geometry.get_nn_shells(B) #Comment out if not needed (quite slow)
-    np.savetxt(matrix_dir+'/'+exp_id+ "_fr%03d"%frame +"nn_shells.txt",shell_matrix)
+
+    #shell_matrix=geometry.get_nn_shells(B) #Comment out if not needed (quite slow)
+    #np.savetxt(matrix_dir+'/'+exp_id+ "_fr%03d"%frame +"nn_shells.txt",shell_matrix)
+
     fileio.write_matrices(matrix_dir,A, B, C,R, exp_id, frame)
     fileio.write_cell_data(trace_dir,edge_verts, cell_edges, cells, exp_id, frame)
     #########################
