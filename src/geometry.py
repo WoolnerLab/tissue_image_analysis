@@ -1,5 +1,5 @@
 """
-spatial.py
+geometry.py
 Natasha Cowley 2024/07/16
 
 Functions to calculate spatial quatities of cells network
@@ -11,6 +11,7 @@ import shapely
 
 from scipy import optimize, linalg
 
+from src import mechanics
 
 
 def get_tangents(A,R):
@@ -109,13 +110,13 @@ def get_mean_area(cell_areas):
     if mean_cell_area <0: mean_cell_area*=-1
     return mean_cell_area
 
-# def get_pref_area(cell_areas, gamma, L, L_0, mean_cell_area):
-#     """
-#     Uses Newtons method to find the value of the dimensional area when the global stress is zero.
-#     """
-#     sol = optimize.root_scalar(mechanics.GlobalStress,args=(cell_areas, gamma, L, L_0),  x0=mean_cell_area, fprime=mechanics.derivative_GlobalStress, method='newton')
-#     pref_area=sol.root
-#     return pref_area
+def get_pref_area(cell_areas, gamma, L, L_0, mean_cell_area):
+    """
+    Uses Newtons method to find the value of the dimensional area when the global stress is zero.
+    """
+    sol = optimize.root_scalar(mechanics.GlobalStress,args=(cell_areas, gamma, L, L_0),  x0=mean_cell_area, fprime=mechanics.derivative_GlobalStress, method='newton')
+    pref_area=sol.root
+    return pref_area
 
 def get_shape_tensors(R,cells, cell_edge_count, cell_centres):
     """
@@ -146,6 +147,11 @@ def get_shape_axis_angle(S):
 
     return long_axis_angle
 
+def get_edge_angle(tangent):
+    edge_angle = np.arctan2(tangent[:,1],tangent[:,0])
+    edge_angle=np.where(edge_angle<0, edge_angle+np.pi, edge_angle)
+
+    return edge_angle
     
 def get_nearest_neighbours(B, n):
     nn=np.unique(np.where(B[:,np.where(B[n]!=0)[0]]!=0)[0])
