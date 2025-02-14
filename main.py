@@ -61,6 +61,7 @@ for l in lines:
     #make directories to output to
     save_dir, trace_dir, matrix_dir, data_dir, plot_dir = fileio.setup_directories(output_dir, edges_name)
 
+
     #################################
     # Process trace and get matrices
     #################################
@@ -99,7 +100,12 @@ for l in lines:
     #########################
 
     #We may change how we non-dimensionalise. For now we assume the isotropic stress sums to zero for a monolayer and solve for A_0*
-    A_0dim= geometry.get_pref_area(cell_areas, Gamma, cell_perimeters, L_0, mean_cell_area) 
+    if t==0 or stretch_type=='u':
+        A_0dim= geometry.get_pref_area(cell_areas, Gamma, cell_perimeters, L_0, mean_cell_area) 
+        fileio.write_pref_area(data_dir,input_dir, edges_name, A_0dim)
+    else:
+        A_0dim=fileio.read_pref_area(input_dir, edges_name)
+        A_0dim*=((1-area_scaling*t)*A_0dim)
 
     R_nd=R/(np.sqrt(A_0dim))
     areas_nd=cell_areas/A_0dim
@@ -125,6 +131,7 @@ for l in lines:
     #########################
     # Data output
     #########################
+    fileio.write_parameters(data_dir,edges_name,stretch_type,t,pixel_size, micron_size,Gamma, Lambda, A_0dim, area_scaling)
 
     ##Cell Data
 
