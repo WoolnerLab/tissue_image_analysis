@@ -6,9 +6,9 @@ Updated 14/02/2025
 
 For this itteration of the code we need traces with spider legs (vertices at edge of trace need 3 edges coming out of them to be picked up by the algorithm). Traces should also be vertically inverted.
 
-Files should be names according to the established naming convention e.g.
+Files should be named according to the established naming convention e.g.
 
-'20231019_1_IP_GFPCAAX-CheHis_uu_0p5_SP_trace_conf.csv'
+'20231019_1_IP_GFPCAAX-CheHis_uu_0p5_SP_fr001_trace'
 
 1. Experiment date
 2. Experiement number on that day
@@ -17,6 +17,8 @@ Files should be names according to the established naming convention e.g.
 5. stretch axis (u,b) stretch type(u,f,s,c) 
 6. stretch amount
 7. projection type
+8. frame frome tif
+9. trace
 
 
 
