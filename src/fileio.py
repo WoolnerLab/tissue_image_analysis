@@ -52,7 +52,7 @@ def write_parameters(savedir,edges_name,stretch_type,t,pixel_size, micron_size,G
         f.write('# exp_ID,stretch_type,t_sec,pixel_size, micron_size,Gamma, Lambda, pref_area unscaled, area_scaling_gradient \n')
         f.write('{}, {}, {},{}, {}, {},{}, {}, {} '.format(edges_name,stretch_type,t,pixel_size, micron_size,Gamma, Lambda, pref_area, area_scaling_gradient))
 
-def write_cell_data(savedir,edge_verts, cells, exp_id):
+def write_cell_data(savedir,edge_verts,cell_edges, cells, exp_id, frame):
     """
     function to write the cell data from the trace to file.
      -vertices connected by an edge
@@ -62,22 +62,28 @@ def write_cell_data(savedir,edge_verts, cells, exp_id):
     """
 
     #write vertices per cell, non uniform number of verts per cell so slightly awkward.
-    with open(savedir+'/'+exp_id+'_cell_vertices.csv', 'w', newline='') as output:
+    with open(savedir+'/'+exp_id+ "_fr%03d"%frame +'_cell_vertices.csv', 'w', newline='') as output:
         writer = csv.writer(output)
         for i in cells:
             writer.writerow(i)
+
+    with open(savedir+'/'+exp_id+ "_fr%03d"%frame +'_edges.csv', 'w', newline='') as output:
+        writer = csv.writer(output)
+        for i in cell_edges:
+            writer.writerow(i)
+            
     #write vertices and edges
-    np.savetxt(savedir+'/'+exp_id+"_edge_verts.csv",np.asarray(edge_verts))
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_edge_verts.csv",np.asarray(edge_verts))
 
     
-def write_matrices(savedir,A, B, C,R, exp_id):
+def write_matrices(savedir,A, B, C,R, exp_id, frame):
     """
     Writes matrices A, B, C and vertex positions R to file 
     """
-    np.savetxt(savedir+'/'+exp_id+"_Matrix_A.txt",A)
-    np.savetxt(savedir+'/'+exp_id+"_Matrix_B.txt",B)
-    np.savetxt(savedir+'/'+exp_id+"_Matrix_R.txt",R)
-    np.savetxt(savedir+'/'+exp_id+"_Matrix_C.txt",C)
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_Matrix_A.txt",A)
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_Matrix_B.txt",B)
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_Matrix_R.txt",R)
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_Matrix_C.txt",C)
 
 def write_pref_area(savedir,input_dir, edges_name, pref_area):
     """ Write preffered area to file """
