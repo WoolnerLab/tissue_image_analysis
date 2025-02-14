@@ -23,6 +23,7 @@ from utils import matrices
 from utils import geometry
 from utils import mechanics
 from utils import visualise
+from utils import divisions
 
 #establish directory structure
 CURRENT_DIR = os.getcwd()
@@ -33,7 +34,7 @@ output_dir=CURRENT_DIR+'/Output/'
 #User Input
 #########################
 
-conf_file=input_dir+'example_conf_file.csv' #name of config file
+conf_file=input_dir+'conf_file_180min-cap6.csv' #name of config file
 
 #########################
 #Constant variables
@@ -45,10 +46,12 @@ pref_perimeter  = -Lambda/(2*Gamma)  # Cell preferred perimeter (non-dimensional
 area_scaling = 0.00001785     # Gradient of the change in prefArea, used for time scaling. NB: if running code for knock downs you may need to recalculate this number.
 t_relax = 20.0 #computational parameter not important for image analysis                                  # not needed, take out if want to
 ExperimentFlag = 1   
+DivisionsFlag = 1
 
 #########################
 #Setup directories
 #########################
+
 
 #read in conf file
 edges_name,t_min, pixel_size, micron_size = fileio.read_conf(conf_file)
@@ -65,7 +68,7 @@ save_dir, trace_dir, matrix_dir, data_dir, plot_dir = fileio.setup_directories(o
 #Run traces and construct matrices
 ##############################
 print("Extracing trace data")
-edge_verts,cells, cell_edges, A, B, C, R, image0 = handtrace.run_trace(edges_name, input_dir)
+edge_verts,cells, cell_edges, A, B, C, R, image0 = handtrace.run_trace(edges_name, input_dir,save_dir)
 fileio.write_cell_data(trace_dir,edge_verts,cells, cell_edges, exp_id)
 handtrace.check_trace_plot(save_dir,image0, cells, R, edges_name)
 print("Writing Matrices")
@@ -77,6 +80,7 @@ fileio.write_matrices(matrix_dir, A, B, C, R, exp_id)
 
 #make sure pixel size is size of tif not of trace as some have borders
 R=R*(micron_size/pixel_size)
+scale = (micron_size/pixel_size)
 
 cell_areas=geometry.get_areas(A,B, R)
 cell_perimeters=geometry.get_perimeters(A,B,R)
@@ -149,12 +153,18 @@ cell_data_all=np.transpose(np.vstack((cell_id, cell_perimeters, cell_areas, peri
 
 cell_df=pd.DataFrame(cell_data_all, columns=data_names) 
 
-#Only geometric data (no Gamma or Lambda dependence)
-geom_data_names=['cell_id', 'cell_perimeter_microns', 'cell_area_microns', 'shape_parameter', 'circularity', 'cell_edge_count', \
-'major_shape_axis_alignment_rads']
-cell_data_geom=np.transpose(np.vstack((cell_id, cell_perimeters, cell_areas,\
- shape_parameter, cell_circularity, cell_edge_count, major_shape_axis_alignment)))
+if DivisionsFlag == 1:
+    dividing_IDs = divisions.get_dividing_cells(R, cells, cell_centres, input_dir+edges_name+'_nuclei/', scale)
+    binary_division_or_no = np.zeros(len(cell_circularity))
+    binary_division_or_no[dividing_IDs.astype(int)] = 1
 
+
+print(cell_areas[0])
+#Only geometric data (no Gamma or Lambda dependence)
+geom_data_names=['cell_id', 'cell_perimeter_microns', 'cell_area_microns', 'cell_centre_x_microns', 'cell_centre_y_microns', 'shape_parameter', 'circularity', 'cell_edge_count', \
+'major_shape_axis_alignment_rads', 'division_flag']
+cell_data_geom=np.transpose(np.vstack((cell_id, cell_perimeters, cell_areas, np.asarray(cell_centres)[:,0], np.asarray(cell_centres)[:,1],\
+ shape_parameter, cell_circularity, cell_edge_count, major_shape_axis_alignment, binary_division_or_no)))
 geom_df=pd.DataFrame(cell_data_geom, columns=geom_data_names)
 
 #write data frames and summary stats
@@ -165,7 +175,6 @@ geom_df.to_csv(data_dir + '/'+exp_id+'_cell_data_geometry.csv', index=False)
 geom_df.iloc[:,1:].describe().to_csv(data_dir + '/'+exp_id+'_geometry_summary_stats.csv')
 
 fileio.write_global_data(global_stress, monolayer_energy, data_dir,edges_name) #write global data
-
 
 
 ##############################
@@ -187,6 +196,12 @@ visualise.angle_hist(cell_df['major_stress_axis_alignment_rads'], "Major Stress 
 ##### Network Plots ####
 axisLength = micron_size/(pref_area**(1/2.)) + 0.5
 
+if DivisionsFlag == 1:
+    visualise.graphNetworkColourBinary('Dividing cells', binary_division_or_no,'red','blue',0.5,0,0,\
+t,A,C,R,cell_centres,cell_P_eff,major_stress_axis,axisLength,plot_dir,edges_name,ExperimentFlag, 'png')
+
+
+    
 ### Gradient plots ###
 #numbered plot for reference
 
@@ -260,3 +275,5 @@ t,A,C,R,cell_centres,cell_P_eff,major_stress_axis,axisLength,plot_dir,edges_name
 # #Shear Stress
 # visualise.graphNetworkColourBinary('Cell Shears Binary',cell_shears,'darkseagreen','honeydew',np.mean(cell_shears),0,0,\
 # t,A,C,R,cell_centres,cell_P_eff,major_stress_axis,axisLength,plot_dir,edges_name,ExperimentFlag, 'png')
+
+

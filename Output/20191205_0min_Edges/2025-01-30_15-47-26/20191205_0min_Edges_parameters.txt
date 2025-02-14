@@ -1,2 +1,0 @@
-# exp_ID,stretch_type,t_sec,pixel_size, micron_size,Gamma, Lambda, pref_area unscaled, area_scaling_gradient 
-20191205_0min_Edges, u, 0.0,1024, 554.11, 0.172,-0.259, 1723.5431283958376, 1.785e-05 

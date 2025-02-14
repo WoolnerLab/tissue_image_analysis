@@ -23,7 +23,7 @@ import os
 
 from source import segmentation_hand
 
-def run_trace(edges_name, input_dir):
+def run_trace(edges_name, input_dir, save_dir):
     
     edges_file=input_dir+edges_name+'.tif'
     image0 = iio.v2.imread(edges_file)
@@ -32,16 +32,20 @@ def run_trace(edges_name, input_dir):
     #remove spiderlegs/contractible branches
     edge_verts, n_coords=segmentation_hand.extract_edges_verts(data)
 
+    R=np.transpose(np.vstack((n_coords[:,1],n_coords[:,0])))
+
     Nv=len(n_coords)
     Ne=len(edge_verts)
     Nc=2+Ne-Nv-1 #Euler characteristic for a planar graph minus the outside infinite face.
     print(Nv, Ne, Nc)
+    
 
     A=segmentation_hand.construct_ev_incidence_matrix(edge_verts, Ne, Nv)
     G=segmentation_hand.construct_adjacency_matrix(A)
     cells=segmentation_hand.get_cycles(G, 12)
+    check_trace_plot(save_dir,image0, cells, R, edges_name)
 
-    if len(cells)!=Nc: print("Nc-len(cells) = ", Nc-len(cells))
+    if len(cells)!=Nc: print("The number of cells is wrong! Check for cells whose edges have a gap. Nc-len(cells) = ", Nc-len(cells))
         
     cell_edges=segmentation_hand.assign_edges_to_cells(cells, edge_verts, Ne)
 
@@ -52,7 +56,6 @@ def run_trace(edges_name, input_dir):
         
     C=0.5*(abs(B)@abs(A))
 
-    R=np.transpose(np.vstack((n_coords[:,1],n_coords[:,0])))
 
 
     return edge_verts,cells, cell_edges, A, B, C, R, image0
@@ -65,10 +68,10 @@ def check_trace_plot(savedir,image0, cells, R, edges_name):
     Plots the network configuration to allow for visual checking.
     """
 
-    plt.figure(figsize=(15,15))
+    plt.figure(figsize=(20,20))
     fig, ax = plt.subplots()
     ax.imshow(image0, cmap='gray');
     for i in range(len(cells)):
-        ax.plot(R[np.append(cells[i], cells[i][0])][:,0],R[np.append(cells[i], cells[i][0])][:,1])
+        ax.plot(R[np.append(cells[i], cells[i][0])][:,0],R[np.append(cells[i], cells[i][0])][:,1], linewidth=0.5)
     plt.savefig(savedir+'/segmentation_cells_'+edges_name+'.png', bbox_inches="tight", dpi=300)
     plt.close()
