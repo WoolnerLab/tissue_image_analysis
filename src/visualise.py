@@ -86,7 +86,7 @@ def plot_summary_hist(cell_data, plot_name, savedir, edges_name):
     savedir (string): location to save plot
     edges_name(string): filename of trace
     """
-    df=cell_data.loc[:, ~cell_data.columns.isin(['cell_id','cell_edge_count','cell_perimeter_nd', 'cell_area_nd', 'time'])]
+    df=cell_data.loc[:, ~cell_data.columns.isin(['cell_id','cell_edge_count','cell_perimeter_nd', 'cell_area_nd', 'time', 'cell_centre_x', 'cell_centre_y'])]
     #fig, axes=plt.subplots(nrows=2, ncols=int(np.ceil(df.shape[1]/2)), sharex=False, sharey=True, figsize=(12,6))
     hist=df.hist()
     [x.title.set_size(14) for x in hist.ravel()]
