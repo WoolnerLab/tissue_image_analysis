@@ -18,11 +18,11 @@ from src import fileio
 from src import visualise
 
 CURRENT_DIR = os.getcwd()
-#input_dir=CURRENT_DIR+'/Input/'
-input_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\100cells/'
+input_dir=CURRENT_DIR+'/Input/'
+#input_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\100cells/'
 
-#output_dir=CURRENT_DIR+'/Output/'
-output_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\100cells/'
+output_dir=CURRENT_DIR+'/Output/'
+#output_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\100cells/'
 
 #########################
 #User Input
@@ -209,20 +209,20 @@ for l in lines:
     stress_angle_flag: boolean, 1 to plot stress axis, 0 otherwise
 
     """
-    visualise.cell_plot_continuous(all_df,'cell_tension','Tension', 'Reds', 0,0,1,0, C, R, cell_centres, edges_name, plot_dir)
-    visualise.cell_plot_continuous(all_df,'cell_pressure','Pressure', 'Blues_r', 0,0,1,0, C, R, cell_centres, edges_name, plot_dir)
+    visualise.cell_plot_continuous(all_df,'cell_tension','Tension', 'Reds', 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
+    visualise.cell_plot_continuous(all_df,'cell_pressure','Pressure', 'Blues_r', 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
     visualise.cell_plot_continuous(all_df,'cell_area_microns',r'Area $(\mu \mathrm{m})$', 'Greens', 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
     visualise.cell_plot_continuous(all_df,'shear_stress','Shear Stress Magnitude', 'plasma', 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
     visualise.cell_plot_continuous(all_df,'circularity','Circularity', 'viridis', 0,0,1,0, C, R, cell_centres, edges_name, plot_dir)
 
 
-    visualise.cell_plot_discrete(all_df,'cell_edge_count', 'Number of sides', cm.jet, 0,0,0,1, C, R, cell_centres, edges_name, plot_dir)
+    visualise.cell_plot_discrete(all_df,'cell_edge_count', 'Number of sides', cm.jet, 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
     
     visualise.cell_plot_binary(all_df,'P_eff', 'Effective Pressure',0, 'blue', 'red', 0,0,0,1, C, R, cell_centres, edges_name, plot_dir)
     
     visualise.cell_plot_ids(t,C,R,cell_centres, edges_name, plot_dir)
 
-    visualise.edge_plot_continuous(all_df,edge_tensions,'Edge Tension', 'rainbow', 0,0,1,0, A, R, cell_centres, edges_name, plot_dir)
+    visualise.edge_plot_continuous(all_df,edge_tensions,'Edge Tension', 'rainbow', 0,0,0,0, A, R, cell_centres, edges_name, plot_dir)
 
     visualise.angle_hist(edge_angles, 'Edge angles', plot_dir, 12, 180, edges_name)
     visualise.angle_hist(all_df['long_axis_angle'], 'Long axis angles', plot_dir, 12, 180, edges_name)
