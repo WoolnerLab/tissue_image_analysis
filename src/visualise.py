@@ -195,6 +195,7 @@ def cell_plot_continuous(data,plot_variable, plot_label, cmap, cc_flag, cell_id_
     plt.tight_layout()
   
     plt.savefig(plot_dir+'/'+edges_name+'_'+plot_variable+'.png', dpi=300) ##edit filename here
+    plt.close()
 
 def cell_plot_discrete(data,plot_variable, plot_label, cmap, cc_flag, cell_id_flag, shape_angle_flag,stress_angle_flag,C,R,cell_centres, edges_name, plot_dir):
     fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
@@ -230,6 +231,7 @@ def cell_plot_discrete(data,plot_variable, plot_label, cmap, cc_flag, cell_id_fl
     plt.tight_layout()
   
     plt.savefig(plot_dir+'/'+edges_name+'_'+plot_variable+'.png', dpi=300) ##edit filename here
+    plt.close()
 
 
 def cell_plot_binary(data,plot_variable, plot_label,threshold, lowcolour, highcolour, cc_flag, cell_id_flag, shape_angle_flag,stress_angle_flag,C,R,cell_centres, edges_name, plot_dir):
@@ -264,6 +266,7 @@ def cell_plot_binary(data,plot_variable, plot_label,threshold, lowcolour, highco
     plt.tight_layout()
   
     plt.savefig(plot_dir+'/'+edges_name+'_'+plot_variable+'_binary.png', dpi=300) ##edit filename here
+    plt.close()
 
 
 def cell_plot_ids(t,C,R,cell_centres, edges_name, plot_dir):
@@ -283,6 +286,7 @@ def cell_plot_ids(t,C,R,cell_centres, edges_name, plot_dir):
     plt.tight_layout()
   
     plt.savefig(plot_dir+'/'+edges_name+'_'+'cell_ids'+'.png', dpi=300) ##edit filename here
+    plt.close()
 
 def edge_plot_continuous(data,plot_variable, plot_label, cmap, cc_flag, cell_id_flag, shape_angle_flag,stress_angle_flag,A,R,cell_centres, edges_name, plot_dir):
     fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
@@ -317,3 +321,4 @@ def edge_plot_continuous(data,plot_variable, plot_label, cmap, cc_flag, cell_id_
     plt.tight_layout()
   
     plt.savefig(plot_dir+'/'+edges_name+'_'+plot_label+'_edges.png', dpi=300) ##edit filename here
+    plt.close()
