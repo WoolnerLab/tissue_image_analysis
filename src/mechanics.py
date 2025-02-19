@@ -1,10 +1,13 @@
 """
 mechanics.py
+Natasha Cowley 2024/07/16
 
-Functions to calculate machanical properties of the network
+Functions to calculate mechanical properties of cells network
+
 """
 
 import numpy as np
+from src import geometry
 
 def get_P_eff(A, Gamma, L, L_0):
     """Calculate Effective pressure of cell"""
@@ -29,23 +32,13 @@ def get_cell_tensions(Gamma, L, L_0):
     return Gamma*(L-L_0)
 
 
+
 def calc_shear(tangents, edge_lengths,B,cell_perimeters,cell_tensions,cell_areas): #Look at this function
     """
     calculate shear stress and zeta matrix
     """
-    N_c=np.shape(B)[0] #number of cells
-    N_e=np.shape(B)[1] #number of edges
 
-    J=np.zeros((N_c,2,2))
-    for i in range(N_c):
-        Q = np.zeros((2,2))
-        for j in range(N_e):
-            if abs(B[i,j])==1:#makes sure we are in the cell i
-                that=(tangents[j]/edge_lengths[j])
-                Q+=abs(B)[i,j]*edge_lengths[j]*np.outer(that,that)
-        Q=Q/(cell_perimeters[i])
-
-        J[i]=Q-0.5*np.identity(2)
+    Q,J=geometry.get_Q_J(tangents, edge_lengths, B,cell_perimeters)
 
 
     detJ = np.linalg.det(J)
@@ -66,3 +59,9 @@ def get_monolayer_energy(A, L, L_0):
     Calculate total energy for the monolayer
     """
     return 0.5*np.sum((A-1)**2+(L-L_0)**2)
+
+def get_stress_angle(P_eff, shape_angle):
+    #if P_eff < 0 get perpendicular angle
+    stress_angle=np.where(P_eff<0, shape_angle-np.pi/2, shape_angle)
+    stress_angle=np.where(stress_angle<0, stress_angle+np.pi, stress_angle)
+    return stress_angle
