@@ -48,3 +48,8 @@ utils/__pycache__/read_conf.cpython-310.pyc
 utils/__pycache__/readfile.cpython-310.pyc
 utils/__pycache__/trace.cpython-310.pyc
 utils/__pycache__/visualise.cpython-310.pyc
+Output/*
+Input/*
+misc/*
+Old_Code/*
+*.pyc

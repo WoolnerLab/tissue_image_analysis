@@ -1,10 +1,10 @@
 """
 fileio.py
+Natasha Cowley 2024/07/16
 
-File input and output functions.
-
-Created by Natasha Cowley on 2023-01-24.
+Functions to handle input and output of the code.
 """
+
 import glob
 import os
 import pandas as pd
@@ -32,16 +32,16 @@ def setup_directories(output_dir, edges_name):
     
     return mydir, trdir, matdir, datadir, plotdir
 
-def read_conf(filename):
-    """ read in config file """
-    conf_data=pd.read_csv(filename)
-    edges_name=conf_data.Edges_Name[0] # file name excluding .tif
-    t_min=conf_data.t_min[0] #time in minutes of image
-    pixel_size=conf_data.Pixel_Size[0] #from raw image
-    micron_size=conf_data.Micron_Size[0] #from raw image
+
+def read_conf_line(line):
+    "split line from conf file into info"
+    conf_data=line.split(',')
+    edges_name=conf_data[0] # file name excluding .tif
+    t_min=float(conf_data[1]) #time in minutes of image
+    pixel_size=float(conf_data[2]) #from raw image
+    micron_size=float(conf_data[3]) #from raw image
 
     return  edges_name, t_min, pixel_size, micron_size
-
 
 def write_parameters(savedir,edges_name,stretch_type,t,pixel_size, micron_size,Gamma, Lambda, pref_area, area_scaling_gradient):
     """write parameters used to file for reference"""
@@ -52,7 +52,7 @@ def write_parameters(savedir,edges_name,stretch_type,t,pixel_size, micron_size,G
         f.write('# exp_ID,stretch_type,t_sec,pixel_size, micron_size,Gamma, Lambda, pref_area unscaled, area_scaling_gradient \n')
         f.write('{}, {}, {},{}, {}, {},{}, {}, {} '.format(edges_name,stretch_type,t,pixel_size, micron_size,Gamma, Lambda, pref_area, area_scaling_gradient))
 
-def write_cell_data(savedir,edge_verts, cells,cell_edges, exp_id):
+def write_cell_data(savedir,edge_verts,cell_edges, cells, exp_id, frame):
     """
     function to write the cell data from the trace to file.
      -vertices connected by an edge
@@ -60,28 +60,30 @@ def write_cell_data(savedir,edge_verts, cells,cell_edges, exp_id):
      -edges in cells
 
     """
-    #write edges per cell, non uniform number of edges per cell so slightly awkward.
-    with open(savedir+'/'+exp_id+'_cell_edges.csv', 'w', newline='') as output:
-        writer = csv.writer(output)
-        for key, value in sorted(cell_edges.items()):
-            writer.writerow(value)
-    #write vertices per cell, non uniform number of edges per cell so slightly awkward.
-    with open(savedir+'/'+exp_id+'_cell_vertices.csv', 'w', newline='') as output:
+
+    #write vertices per cell, non uniform number of verts per cell so slightly awkward.
+    with open(savedir+'/'+exp_id+ "_fr%03d"%frame +'_cell_vertices.csv', 'w', newline='') as output:
         writer = csv.writer(output)
         for i in cells:
             writer.writerow(i)
+
+    with open(savedir+'/'+exp_id+ "_fr%03d"%frame +'_edges.csv', 'w', newline='') as output:
+        writer = csv.writer(output)
+        for i in cell_edges:
+            writer.writerow(i)
+            
     #write vertices and edges
-    np.savetxt(savedir+'/'+exp_id+"_edge_verts.csv",np.asarray(edge_verts))
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_edge_verts.csv",np.asarray(edge_verts))
 
     
-def write_matrices(savedir,A, B, C,R, exp_id):
+def write_matrices(savedir,A, B, C,R, exp_id, frame):
     """
     Writes matrices A, B, C and vertex positions R to file 
     """
-    np.savetxt(savedir+'/'+exp_id+"_Matrix_A.txt",A)
-    np.savetxt(savedir+'/'+exp_id+"_Matrix_B.txt",B)
-    np.savetxt(savedir+'/'+exp_id+"_Matrix_R.txt",R)
-    np.savetxt(savedir+'/'+exp_id+"_Matrix_C.txt",C)
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_Matrix_A.txt",A)
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_Matrix_B.txt",B)
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_Matrix_R.txt",R)
+    np.savetxt(savedir+'/'+exp_id+ "_fr%03d"%frame +"_Matrix_C.txt",C)
 
 def write_pref_area(savedir,input_dir, edges_name, pref_area):
     """ Write preffered area to file """
