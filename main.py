@@ -34,6 +34,7 @@ f = open(config_file,'r')
 lines = f.read().splitlines()[1:] ### I'm assuming these are experiment names at different times
 f.close()
 
+DivisionsFlag = 1 # set to 1 if you have a file of Nuclei ROIs that you would like to use to identify dividing cells; otherwise set to 0
 #########################
 #Constant variables
 #########################
@@ -141,12 +142,12 @@ for l in lines: # for each trace
 
     if DivisionsFlag == 1:
         dividing_IDs = divisions.get_dividing_cells(R, cells, cell_centres, input_dir+edges_name+'_nuclei/', scale_pixels_to_microns)
-        binary_division_or_no = np.zeros(len(cell_circularity))
+        binary_division_or_no = np.zeros(len(circularity))
         binary_division_or_no[dividing_IDs.astype(int)] = 1
         geom_data_names=['cell_id', 'cell_perimeter_microns', 'cell_area_microns', 'cell_centre_x_microns', 'cell_centre_y_microns', 'shape_parameter', 'circularity', 'cell_edge_count', \
-        'major_shape_axis_alignment_rads', 'division_flag']
+        'long_axis_angle', 'cell_zeta', 'division_flag']
         cell_data_geom=np.transpose(np.vstack((cell_id, cell_perimeters, cell_areas, np.asarray(cell_centres)[:,0], np.asarray(cell_centres)[:,1],\
-        shape_parameter, cell_circularity, cell_edge_count, major_shape_axis_alignment, binary_division_or_no)))
+        shape_parameter, circularity, cell_edge_count, long_axis_angle, zeta, binary_division_or_no)))
         geom_df=pd.DataFrame(cell_data_geom, columns=geom_data_names)
 
 
@@ -236,8 +237,8 @@ for l in lines: # for each trace
     
     visualise.cell_plot_binary(all_df,'P_eff', 'Effective Pressure',0, 'blue', 'red', 0,0,0,1, C, R, cell_centres, edges_name, plot_dir)
     
-    if DivisionsFlag = 1:
-            visualise.cell_plot_binary(all_df,'division_flag', 'Dividing cells',0.5, 'magenta', 'green', 0,0,0,1, C, R, cell_centres, edges_name, plot_dir)
+    if DivisionsFlag == 1:
+            visualise.cell_plot_binary(all_df,'division_flag', 'Dividing cells',0.5, 'magenta', 'green', 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
 
     visualise.cell_plot_ids(t,C,R,cell_centres, edges_name, plot_dir)
 
