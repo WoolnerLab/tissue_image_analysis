@@ -10,6 +10,8 @@ import numpy as np
 import shapely 
 
 from scipy import optimize, linalg
+from scipy.sparse.csgraph import shortest_path
+from scipy.sparse import csr_array
 
 from src import mechanics
 
@@ -183,34 +185,10 @@ def get_nn_shells(B):
     Get matrix of shells of nearest neighbours
     """
 
-    N_c=np.shape(B)[0]
+    Adj=-((B@B.T)-np.diag(np.sum(abs(B), axis=1))).astype(int) #cell-cell adjacency matrix
+    Adj_sp=csr_array(Adj) #sparse matrix
 
-    all_nn=[]
-    for i in range(N_c):
-        nn=[]
-        all_cells=[]
-        nn.append([i])
-        all_cells.append(i)
-
-        shell1=list(np.unique(np.where(B[:,np.where(B[i,:]!=0)[0]]!=0)[0])) #1st shell of neighbouring cells
-        shell1.remove(i)
-        
-        nn.append(shell1)
-        all_cells.extend(shell1)
-
-        while len(all_cells) < N_c: 
-            shell=[]
-            for n in nn[-1]: #for each cell in previous shell find their nns not in previous cell
-                nn_i=np.unique(np.where(B[:,np.where(B[n,:]!=0)[0]]!=0)[0])
-                shell.append(set(nn_i).difference(all_cells))
-            shell=set([x for xs in shell for x in xs]) #get unique cells
-            nn.append(list(shell))
-            all_cells.extend(list(shell))
-        
-        all_nn.append(nn)
-        
-    shell_matrix=np.array([[[x for x, xs in enumerate(all_nn[m]) if n in xs][0] for n in range(N_c)] for m in range(N_c)])
-
+    shell_matrix, predecessors = shortest_path(csgraph=Adj_sp, directed=False, return_predecessors=True) #find shortest path between cells i, j
 
     return shell_matrix
 
