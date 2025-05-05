@@ -180,37 +180,50 @@ def get_dLdr(A, B, tangents, edge_lengths):
 
 def get_nn_shells(B):
     """
-    Get matrix of shells of nearest neighbours
+    Get matrix of shells of nearest neighbours (nn)
+    shell_matrix is an array size (NcxNc) where Nc is number of cells. 
+    shell_matrix[i,j] gives which 'shell' cell j exists in relative to cell i.
+    shell_matrix[i] returns all shells relative to cell i.
     """
 
-    N_c=np.shape(B)[0]
+    N_c=np.shape(B)[0] # Total number of cells 
 
     all_nn=[]
-    for i in range(N_c):
-        nn=[]
-        all_cells=[]
-        nn.append([i])
-        all_cells.append(i)
+    for i in range(N_c): # For each cell... (find their nn)
+        nn=[] 
+        all_cells=[] 
+        nn.append([i]) # fill nn with current cell ID
+        all_cells.append(i) # fill all_cells with current cell ID
 
-        shell1=list(np.unique(np.where(B[:,np.where(B[i,:]!=0)[0]]!=0)[0])) #1st shell of neighbouring cells
-        shell1.remove(i)
+        shell1=list(np.unique(np.where(B[:,np.where(B[i,:]!=0)[0]]!=0)[0])) # 1st shell of neighbouring cells
+        # shell1 finds cell i's edges (non-empty columns of B[i,:]), and checks which other cells share this edge (i.e. i's neighours)
+        shell1.remove(i) # remove cell ID entry
         
-        nn.append(shell1)
-        all_cells.extend(shell1)
+        nn.append(shell1) # each nn `entry' is an entire shell
+        all_cells.extend(shell1) # each all cell `entry' is a single neighbour cell
 
         while len(all_cells) < N_c: 
-            shell=[]
-            for n in nn[-1]: #for each cell in previous shell find their nns not in previous cell
-                nn_i=np.unique(np.where(B[:,np.where(B[n,:]!=0)[0]]!=0)[0])
-                shell.append(set(nn_i).difference(all_cells))
-            shell=set([x for xs in shell for x in xs]) #get unique cells
-            nn.append(list(shell))
+            shell=[] 
+            for n in nn[-1]: #for each cell in previous shell... (find their next nn) 
+                nn_i=np.unique(np.where(B[:,np.where(B[n,:]!=0)[0]]!=0)[0]) # find all nns
+                shell.append(set(nn_i).difference(all_cells)) # remove nns which have already been recorded in previous shell(s)
+            
+            shell=set([cell for subshell in shell for cell in subshell]) #get unique cells within shell (set cannot have duplicate entries)
+            ## this is a one-liner which is
+            #    for subshell in shell:   
+            ##          for cell in subshell:
+            ###                 append cell
+
+            nn.append(list(shell))   
             all_cells.extend(list(shell))
         
         all_nn.append(nn)
-        
-    shell_matrix=np.array([[[x for x, xs in enumerate(all_nn[m]) if n in xs][0] for n in range(N_c)] for m in range(N_c)])
 
+    shell_matrix=np.array([[[x for x, xs in enumerate(all_nn[m]) if n in xs][0] for n in range(N_c)] for m in range(N_c)])
+    # for cell m:
+        # loop over all cells (n):
+        #   if n is in subshell xs:
+            # return which subshell n is in (x) (x=1 is the nearest subshell to cell m, x=6 is the 6th away etc.)
 
     return shell_matrix
 
