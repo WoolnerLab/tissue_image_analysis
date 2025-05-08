@@ -11,9 +11,11 @@ import pandas as pd
 import numpy as np
 import itertools
 from skan import Skeleton, summarize
+from skan.csr import skeleton_to_csgraph
 import skimage.morphology as sk
 import networkx as nx
 from skimage import io
+from scipy.spatial.distance import cdist
 import shapely 
 
 def skeletonise(filename, smooth=True):
@@ -43,6 +45,45 @@ def skeletonise(filename, smooth=True):
     branch_data = summarize(Skeleton(image))
     return image, branch_data
 
+def flipper_mask(skel, branch_data, lifetime):
+    pixel_graph, coordinates=skeleton_to_csgraph(skel) #get coordinates from skeleton
+    coords=np.transpose(coordinates)
+
+    non_nan_pixels=np.transpose(np.where(~np.isnan(lifetime))) #find pixels in masked lifetime image
+
+    dist_matrix=cdist(non_nan_pixels, coords) #Distance between lifetime pixels and skeleton coordinates
+    min_dists_ind=np.argmin(dist_matrix, axis=1)
+    min_dists=np.min(dist_matrix, axis=1)
+    #Make edge-node matrix
+    skeleton=Skeleton(skel)
+    p_list=skeleton.paths_list()
+    path_node_matrix=np.zeros((len(p_list), len(coords)))
+    for n in range(len(p_list)):
+        path_node_matrix[n, p_list[n]]=1
+    #find nearest edge to each pixel
+    nearest_path=np.array([np.argwhere(path_node_matrix[:,min_dists_ind[n]]!=0)[0][0] for n in range(len(min_dists))])
+    nearest_path=np.where(min_dists<3, nearest_path, np.nan)
+    #find mean lifetime along each edge
+    pts_per_edge=np.array([len(np.ravel(lifetime[~np.isnan(lifetime)])[nearest_path==n]) for n in range(len(p_list))])
+    mean_lt=np.array([np.nanmean(np.ravel(lifetime[~np.isnan(lifetime)])[nearest_path==n]) for n in range(len(p_list))])
+    median_lt=np.array([np.nanmedian(np.ravel(lifetime[~np.isnan(lifetime)])[nearest_path==n]) for n in range(len(p_list))])
+    point_density=pts_per_edge/branch_data['branch-distance'].values
+
+    mean_lt=np.where(pts_per_edge>4,mean_lt , np.nan)
+    mean_lt=np.where(point_density>0.5,mean_lt , np.nan)
+    median_lt=np.where(pts_per_edge>4,median_lt , np.nan)
+    median_lt=np.where(point_density>0.5,median_lt , np.nan)
+
+
+
+    branch_data['mean_lt']=mean_lt
+    branch_data['median_lt']=median_lt
+
+
+    data_internal=branch_data[branch_data['branch-type']==2] #do we also need to split out sub skeletons for disconnected traces? We also want to identify holes by number of cycles compared to Nc, if cycles < Nc then there is a hole and can't get matrices.
+    data_int=data_internal.drop_duplicates().reset_index(drop=True)
+
+    return data_int.mean_lt, data_int.median_lt
 
 def extract_edges_verts(data):
     data_internal=data[data['branch-type']==2] #do we also need to split out sub skeletons for disconnected traces? We also want to identify holes by number of cycles compared to Nc, if cycles < Nc then there is a hole and can't get matrices.
@@ -128,10 +169,15 @@ def construct_ce_incidence_matrix(cells,edge_verts, Nc, Ne, A):
 
     return B
 
-def get_matrices(trace_file):
+def get_matrices(trace_file, flipper=False, flipper_file=""):
     
     #skeletonise and segment edges
     im, data=skeletonise(trace_file)
+    if flipper==True:
+ 
+        lifetime=io.imread(flipper_file, as_gray=True)
+        mean_lt, median_lt=flipper_mask(im, data, lifetime)
+    
     #remove spiderlegs/contractible branches
     edge_verts, n_coords=extract_edges_verts(data)
 
@@ -161,5 +207,8 @@ def get_matrices(trace_file):
 
     cell_edges=[np.where(B[x, :]!=0) for x in range(len(B))]
 
-    return R, A, B, C, G, cells, edge_verts, cell_edges
+    if flipper==False:
+        return R, A, B, C, G, cells, edge_verts, cell_edges
+    else:
+        return R, A, B, C, G, cells, edge_verts, cell_edges, mean_lt, median_lt
 
