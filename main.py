@@ -7,7 +7,10 @@ Natasha Cowley 2024/07/16
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from matplotlib import cm
+
 
 from glob import glob
 
@@ -27,11 +30,12 @@ output_dir=CURRENT_DIR+'/Output/'
 #########################
 #User Input
 #########################
-
+flipper=True
 c_file=sorted(glob(input_dir+'*_conf.csv'))[0] #conf file name goes here
 f = open(c_file,'r')
 lines = f.read().splitlines()[1:]
 f.close()
+
 
 #########################
 #Constant variables
@@ -50,6 +54,8 @@ for l in lines:
     
     #read in conf file
     edges_name,t_min, pixel_size, micron_size = fileio.read_conf_line(l)
+    if flipper==True:
+        flipper_file=os.path.join(input_dir, l.split(',')[-1]+".tif")
     print(edges_name)
     exp_id=edges_name.split('_')[0]+'_'+edges_name.split('_')[1]+'_'+edges_name.split('_')[2]
     t=t_min*60.0
@@ -65,7 +71,10 @@ for l in lines:
     #################################
     # Process trace and get matrices
     #################################
-    R, A, B, C, G, cells, edge_verts, cell_edges=trace_processing.get_matrices(trace_file)
+    if flipper==True:
+        R, A, B, C, G, cells, edge_verts, cell_edges, mean_lt, median_lt=trace_processing.get_matrices(trace_file, True, flipper_file)
+    else:
+        R, A, B, C, G, cells, edge_verts, cell_edges=trace_processing.get_matrices(trace_file)
 
     #shell_matrix=geometry.get_nn_shells(B) #Comment out if not needed (quite slow)
     #np.savetxt(matrix_dir+'/'+exp_id+ "_fr%03d"%frame +"nn_shells.txt",shell_matrix)
@@ -130,6 +139,8 @@ for l in lines:
     cell_shear_stress=((perimeters_nd*cell_tensions)/areas_nd)*zeta
     stress_angle=mechanics.get_stress_angle(P_eff, long_axis_angle)
     edge_tensions=np.array([np.sum(cell_tensions[np.where(B[:, x]!=0)]) for x in range(len(A))])
+
+    peripheral_edges=np.abs(np.sum(B, axis=0))
     #########################
     # Data output
     #########################
@@ -174,7 +185,13 @@ for l in lines:
     edge_data_names=['edge_length_microns', 'edge_length_nd', 'edge_tension', 'edge_angle']
     edge_data=np.transpose(np.vstack((edge_lengths, edge_lengths_nd, edge_tensions, edge_angles)))
 
+
+
     edge_df=pd.DataFrame(edge_data, columns=edge_data_names)
+    if flipper==True:
+        edge_df['mean_lifetime']=mean_lt
+        edge_df['median_lifetime']=median_lt
+    edge_df.iloc[peripheral_edges!=0]=np.nan
     edge_df.to_csv(data_dir + '/'+exp_id+  "_fr%03d"%frame +'_edge_data.csv', index=False)
 
 
@@ -224,7 +241,7 @@ for l in lines:
     
     visualise.cell_plot_ids(t,C,R,cell_centres, edges_name, plot_dir)
 
-    visualise.edge_plot_continuous(all_df,edge_tensions,'Edge Tension', 'rainbow', 0,0,0,0, A, R, cell_centres, edges_name, plot_dir)
+    visualise.edge_plot_continuous(all_df,edge_df.edge_tension,'Edge Tension', 'rainbow', 0,0,0,0, A, R, cell_centres, edges_name, plot_dir)
 
     visualise.angle_hist(edge_angles, 'Edge angles', plot_dir, 12, 180, edges_name)
     visualise.angle_hist(all_df['long_axis_angle'], 'Long axis angles', plot_dir, 12, 180, edges_name)
@@ -233,3 +250,10 @@ for l in lines:
     visualise.plot_cell_sides(all_df, 'Number of Sides', plot_dir, edges_name)
 
     visualise.plot_summary_hist(all_df, 'summary_histograms', plot_dir, edges_name)
+
+    if flipper==True:
+        visualise.edge_plot_continuous(all_df,edge_df.mean_lifetime,'mean_lifetime', 'rainbow', 0,0,0,0, A, R, cell_centres, edges_name, plot_dir)
+        visualise.edge_plot_continuous(all_df,edge_df.median_lifetime,'median_lifetime', 'rainbow', 0,0,0,0, A, R, cell_centres, edges_name, plot_dir)
+        sns.pairplot(edge_df)
+        plt.savefig(plot_dir+'/edge_summary.png')
+        plt.close()
