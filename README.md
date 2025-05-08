@@ -30,6 +30,11 @@ Cell traces should be placed in the input file. For each experiment a configurat
  - **Pixel_Size**: pixel size from original image (find in Fiji or log, likely to be 1024 or 512)
  - **Micron_Size**: micron size from original image (find in Fiji or log)
 
+If running a flipper trace add and addional column for the lifetime image (this should aslo be stored in the input directory, and invereted so it has the same orientation as the trace file)
+
+ - **Flipper_file**: the name of the masked lifetimefile without extension
+
+You will also need to set flipper==True in the input directory
 
 The fields are case sensitive so do not change the names of the columns.
 
