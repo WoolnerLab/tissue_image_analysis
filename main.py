@@ -30,7 +30,7 @@ output_dir=CURRENT_DIR+'/Output/'
 #########################
 #User Input
 #########################
-flipper=True
+flipper=False
 c_file=sorted(glob(input_dir+'*_conf.csv'))[0] #conf file name goes here
 f = open(c_file,'r')
 lines = f.read().splitlines()[1:]
