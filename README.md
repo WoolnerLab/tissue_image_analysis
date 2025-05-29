@@ -24,11 +24,11 @@ NOTE not all experiments will be appropriate for this format. Feel free to amend
 
 'XXXXXXXX_1_IP_Insert-exp-info-with-dashes_uu_0p0_STP_fr001_trace'
 
-Cell traces should be placed in the input file. For each experiment a configuration file should be filled out, with different timepoints on seperate lines. This is a .csv file, whose name ends in "_conf.csv", with the following fields:
+Cell traces should be placed in the input file. For each experiment a configuration file should be filled out, with different timepoints on separate lines. This is a .csv file, whose name ends in "_conf.csv", with the following fields:
 
 
  - **Edges_Name**: the name of the trace file without extension.
- - **t_min**: Timepoint in experiement in minutes.
+ - **t_min**: Timepoint in experiment in minutes.
  - **Pixel_Size**: pixel size from original image (find in Fiji or log, likely to be 1024 or 512)
  - **Micron_Size**: micron size from original image (find in Fiji or log)
 
@@ -41,5 +41,3 @@ If you are running this for a stretched sample which is not at 0s time, you will
 that there is a pref area file calculated from the t=0s trace in the input directory. The name of
 which should start with the date of the experiment. If you have experiments from the same date, be
 sure to only have the pref_area file from the desired experiment in the Input folder.
-
-Additionally, the input file can 
