@@ -21,11 +21,12 @@ from src import fileio
 from src import visualise
 
 CURRENT_DIR = os.getcwd()
-input_dir=CURRENT_DIR+'/Input/'
+#input_dir=CURRENT_DIR+'/Input/'
+input_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\Incremental\\Tracked/20240417_1_IP_GFPCAAX-CheHis_us_8p6_SP/Frames/aligned/traces/'
 
-if os.path.exists(CURRENT_DIR+'/Output/')==False: os.mkdir(CURRENT_DIR+'/Output/')
-output_dir=CURRENT_DIR+'/Output/'
-
+#if os.path.exists(CURRENT_DIR+'/Output/')==False: os.mkdir(CURRENT_DIR+'/Output/')
+#output_dir=CURRENT_DIR+'/Output/'
+output_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\Output\\Incremental_data/20240417_1_IP_GFPCAAX-CheHis_us_8p6/'
 
 #########################
 #User Input
@@ -76,8 +77,8 @@ for l in lines:
     else:
         R, A, B, C, G, cells, edge_verts, cell_edges=trace_processing.get_matrices(trace_file)
 
-    #shell_matrix=geometry.get_nn_shells(B) #Comment out if not needed (quite slow)
-    #np.savetxt(matrix_dir+'/'+exp_id+ "_fr%03d"%frame +"nn_shells.txt",shell_matrix)
+    shell_matrix=geometry.get_nn_shells(B) #Comment out if not needed (quite slow)
+    np.savetxt(matrix_dir+'/'+exp_id+ "_fr%03d"%frame +"nn_shells.txt",shell_matrix)
 
     fileio.write_matrices(matrix_dir,A, B, C,R, exp_id, frame)
     fileio.write_cell_data(trace_dir,edge_verts, cell_edges, cells, exp_id, frame)
