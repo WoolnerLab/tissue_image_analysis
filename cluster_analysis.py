@@ -38,12 +38,16 @@ output_dir=CURRENT_DIR+'/Output/'
 #########################
 #User Input
 #########################
-trace_name='20250805_1_YJ_BFPCAAX-mCheHis-A4-KrasD12_MP_trace.tif'
+
+###Put trace file and boundary file in input folder
+
+trace_name='20250805_1_YJ_BFPCAAX-mCheHis-A4-KrasD12_MP_trace.tif'  #Important that 1st part is date, 2nd part is experiment number that day, 3rd part is initials
 trace_file=sorted(glob(input_dir+trace_name))[0] #trace filename
-boundary_file=glob(input_dir+'*_boundary.tif')[0] #boundary filename
+boundary_file=glob(input_dir+'*_boundary.tif')[0] #boundary filename (make sure it ends 'boundary' )
 exp_id=trace_name.split('_')[0]+'_'+trace_name.split('_')[1]+'_'+trace_name.split('_')[2]
 print(exp_id)
 
+#enter pixel and micron dimensions of original image
 pixel_size=512
 micron_size=739.54
 ####################################
@@ -178,13 +182,9 @@ cmap='viridis'
 
 fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
 polys=visualise.plot_polys(C, R, cell_centres)
-polys.set_array(cell_df[plot_variable])
-polys.set_cmap(cmap) ###set polygon colourmap here
+polys.set_facecolor('white') ###set polygon colourmap here
 polys.set_edgecolor('black') #black edges
-polys.set_clim(np.min(cell_df[plot_variable]),np.max(cell_df[plot_variable]))
 ax.add_collection(polys) 
-cbar = fig.colorbar(polys, ax=ax)
-cbar.ax.set_ylabel(plot_label, rotation=90) ###set colorbar label
 ax.tick_params(axis='x',which='both',bottom=False,top=False,labelbottom=False)
 ax.tick_params(axis='y',which='both',left=False,right=False,labelleft=False)
 ax.set_xlim(min(R[:,0]-10), max(R[:,0]+10)) #if no edditional elements polygons won't show without manual setting of axes
@@ -198,5 +198,53 @@ for i in range(N_c):
 
 plt.tight_layout()
 
+plt.savefig(plot_dir+'/'+exp_id+'_segmentation.png', dpi=300) ##edit filename here
+
+
+
+plot_variable='alignment'
+plot_label='Alignment'
+cmap='viridis'
+
+fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
+polys=visualise.plot_polys(C, R, cell_centres)
+polys.set_array(cell_df[plot_variable])
+polys.set_cmap(cmap) ###set polygon colourmap here
+polys.set_edgecolor('black') #black edges
+polys.set_clim(np.min(cell_df[plot_variable]),np.max(cell_df[plot_variable]))
+ax.add_collection(polys) 
+cbar = fig.colorbar(polys, ax=ax)
+cbar.ax.set_ylabel(plot_label, rotation=90) ###set colorbar label
+ax.tick_params(axis='x',which='both',bottom=False,top=False,labelbottom=False)
+ax.tick_params(axis='y',which='both',left=False,right=False,labelleft=False)
+ax.set_xlim(min(R[:,0]-10), max(R[:,0]+10)) #if no edditional elements polygons won't show without manual setting of axes
+ax.set_ylim(min(R[:,1]-10), max(R[:,1]+10))
+visualise.plot_alignment_axis(cell_centres,np.asarray(cell_df['long_axis_angle']))
+
+plt.tight_layout()
+
 plt.savefig(plot_dir+'/'+exp_id+'_'+plot_variable+'.png', dpi=300) ##edit filename here
 
+
+plot_variable='angle_with_boundary'
+plot_label='Angle with boundary'
+cmap='Blues'
+
+fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
+polys=visualise.plot_polys(C, R, cell_centres)
+polys.set_array(cell_df[plot_variable])
+polys.set_cmap(cmap) ###set polygon colourmap here
+polys.set_edgecolor('black') #black edges
+polys.set_clim(np.min(cell_df[plot_variable]),np.max(cell_df[plot_variable]))
+ax.add_collection(polys) 
+cbar = fig.colorbar(polys, ax=ax)
+cbar.ax.set_ylabel(plot_label, rotation=90) ###set colorbar label
+ax.tick_params(axis='x',which='both',bottom=False,top=False,labelbottom=False)
+ax.tick_params(axis='y',which='both',left=False,right=False,labelleft=False)
+ax.set_xlim(min(R[:,0]-10), max(R[:,0]+10)) #if no edditional elements polygons won't show without manual setting of axes
+ax.set_ylim(min(R[:,1]-10), max(R[:,1]+10))
+visualise.plot_alignment_axis(cell_centres,np.asarray(cell_df['long_axis_angle']))
+
+plt.tight_layout()
+
+plt.savefig(plot_dir+'/'+exp_id+'_'+plot_variable+'.png', dpi=300) ##edit filename here
