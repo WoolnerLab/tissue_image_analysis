@@ -155,6 +155,12 @@ def get_edge_angle(tangent):
 
     return edge_angle
     
+def get_line_cluster_angle(line_to_cluster):
+    line_angle = np.arctan2(line_to_cluster[:,1],line_to_cluster[:,0])
+    line_angle=np.where(line_angle<0, line_angle+np.pi, line_angle)
+
+    return line_angle
+
 def get_nearest_neighbours(B, n):
     nn=np.unique(np.where(B[:,np.where(B[n]!=0)[0]]!=0)[0])
     nn=nn[nn!=n]
