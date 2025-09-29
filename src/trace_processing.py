@@ -122,7 +122,7 @@ def construct_ev_incidence_matrix(edge_verts, Ne, Nv):
 
     A=np.zeros((Ne,Nv))
 
-
+    #arbitrarily set orientation by order of verts in list.
     for j in range(0,Ne):
         A[j][edge_verts[j, 0]]=-1 #flows out of vertex
         A[j][edge_verts[j, 1]]=1 #flows into vertex
@@ -153,16 +153,21 @@ def get_cycles(G, n_threshold, R):
 
 
 
-def construct_ce_incidence_matrix(cells,edge_verts, Nc, Ne, A):  
+def construct_ce_incidence_matrix(cells,edge_verts,A): 
+    Nc=len(cells)
+    Ne=len(edge_verts)
     B=np.zeros((Nc,Ne))
 
     for i in range(0,Nc): #loop over cells
     
-        for j in range(len(cells[i])): #loop over cell list
+        for j in range(len(cells[i])): #loop over each cell verts
             
+            #get each edge in a cell in order
             edge=list(set(np.argwhere(A[:,cells[i][j-1]]).flatten()).intersection(np.argwhere(A[:,cells[i][j]]).flatten()))[0]
-
-            if edge_verts[edge,1]==cells[i][j]:
+            #cells is a list of vertices in cells in order round cell\
+            #if the 2nd vert in an edge from edge_verts(used to make A) == next vert in cells\
+            #then orientation matches, B[i, edge]=1, otherwise orientation is oposite B[i, egde]=-1
+            if edge_verts[edge,1]==cells[i][j]: 
                 B[i, edge]=1
             else:
                 B[i, edge]=-1
@@ -183,7 +188,7 @@ def get_matrices(trace_file, flipper=False, flipper_file=""):
 
     Nv=len(n_coords)
     Ne=len(edge_verts)
-    Nc=2+Ne-Nv-1 #Euler characteristic for a planar graph minus the outside infinite face.
+    Nc=2+Ne-Nv-1 #Euler characteristic for a planar graph minus the outside infinite face. (only works for connected graphs)
     #print(Nv, Ne, Nc)
 
     R=np.transpose(np.vstack((n_coords[:,0],n_coords[:,1])))
@@ -196,10 +201,11 @@ def get_matrices(trace_file, flipper=False, flipper_file=""):
 
     cells=get_cycles(G, 12, R)
 
-    if len(cells)!=Nc: print("Nc-len(cells) = ", Nc-len(cells))
+    #if len(cells)!=Nc: print("Nc-len(cells) = ", Nc-len(cells))
+
     if set([x for xs in cells for x in xs]).difference(set(range(Nv)))!=set(): print("hanging vertex, check spider legs")
 
-    B=construct_ce_incidence_matrix(cells,edge_verts, Nc, Ne, A)
+    B=construct_ce_incidence_matrix(cells,edge_verts, A)
 
     if len(np.where(B@A!=0)[0])!=0: print("Matrix generation error, check A and B")
         
