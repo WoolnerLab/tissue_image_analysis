@@ -42,7 +42,7 @@ def skeletonise(filename, smooth=True):
     if not smooth:
         image = sk.medial_axis(image, return_distance=False)
     
-    branch_data = summarize(Skeleton(image))
+    branch_data = summarize(Skeleton(image),separator='-')
     return image, branch_data
 
 def flipper_mask(skel, branch_data, lifetime):
