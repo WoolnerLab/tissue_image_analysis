@@ -21,12 +21,12 @@ from src import fileio
 from src import visualise
 
 CURRENT_DIR = os.getcwd()
-#input_dir=CURRENT_DIR+'/Input/'
-input_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\\Incremental\\Tracked/20240417_1_IP_GFPCAAX-CheHis_us_8p6_SP/Frames/aligned/traces/'
+input_dir=CURRENT_DIR+'/Input/'
+#input_dir='/home/ncowley/Documents/Work/wholecap/Traces/Cap180/'
 
 #if os.path.exists(CURRENT_DIR+'/Output/')==False: os.mkdir(CURRENT_DIR+'/Output/')
-#output_dir=CURRENT_DIR+'/Output/'
-output_dir='C:\\Users\\v35431nc\\Documents\\Lab_Stuff\\Movies_to_track\Output\\Incremental_data/20240417_1_IP_GFPCAAX-CheHis_us_8p6/'
+output_dir=CURRENT_DIR+'/Output/'
+#output_dir='/home/ncowley/Documents/Work/wholecap/Data/Cap_180/'
 
 #########################
 #User Input
@@ -98,7 +98,7 @@ for l in lines:
     print("Mean area = ", mean_cell_area)
     shape_tensor= geometry.get_shape_tensors(R, cells,cell_edge_count, cell_centres)
     circularity, evals=geometry.get_circularity(shape_tensor)
-    long_axis_angle=geometry.get_shape_axis_angle(shape_tensor)
+    long_axis_angle, long_axis=geometry.get_shape_axis_angle(shape_tensor)
     shape_parameter = cell_perimeters/(np.sqrt(cell_areas))
     tangents=geometry.get_tangents(A,R)
     edge_lengths=geometry.get_edge_lengths(tangents)
@@ -234,6 +234,7 @@ for l in lines:
     visualise.cell_plot_continuous(all_df,'cell_area_microns',r'Area $(\mu \mathrm{m})$', 'Greens', 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
     visualise.cell_plot_continuous(all_df,'shear_stress','Shear Stress Magnitude', 'plasma', 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
     visualise.cell_plot_continuous(all_df,'circularity','Circularity', 'viridis', 0,0,1,0, C, R, cell_centres, edges_name, plot_dir)
+    visualise.cell_plot_continuous(all_df,'P_eff', 'Effective Pressure', 'bwr', 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
 
 
     visualise.cell_plot_discrete(all_df,'cell_edge_count', 'Number of sides', cm.jet, 0,0,0,0, C, R, cell_centres, edges_name, plot_dir)
