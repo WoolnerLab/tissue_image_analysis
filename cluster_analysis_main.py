@@ -43,7 +43,7 @@ output_dir=CURRENT_DIR+'/Output/'
 
 ###Put trace file and boundary file in input folder
 
-trace_name='20250828_1_YJ_BFPCAAX-mCheHis-A4-KrasV12_MP_seg_cp_trace.tif'  #Important that 1st part is date, 2nd part is experiment number that day, 3rd part is initials
+trace_name='20250828_2_YJ_BFPCAAX-mCheHis-A4-KrasV12_MP_seg_cp_trace.tif'  #Important that 1st part is date, 2nd part is experiment number that day, 3rd part is initials
 exp_id=trace_name.split('_')[0]+'_'+trace_name.split('_')[1]+'_'+trace_name.split('_')[2]
 trace_file=sorted(glob(input_dir+trace_name))[0] #trace filename
 boundary_file=glob(input_dir+exp_id+'*_boundary.tif')[0] #boundary filename (make sure it ends 'boundary' )
@@ -188,7 +188,7 @@ outside_df.to_csv(data_dir + '/'+exp_id +'_cells_outside_cluster_orientation.csv
 # Plots
 #########################
 
-
+## Angle with boundary for shells 1 and 2
 plot_cells=cells_outside_cluster[np.where(boundary_shells<3)[0]] #shells 1 and 2
 plot_label='Angle with boundary'
 cmap='Blues'
@@ -219,6 +219,19 @@ plt.tight_layout()
 
 plt.savefig(plot_dir+'/'+exp_id+'_shells_1-2.png', dpi=300) ##edit filename here
 
+#angle histogram
+fig, ax = plt.subplots()
+plt.hist(angle_with_boundary[plot_cells], bins=9, range=(0, np.pi/2))
+plt.xlabel("Angle with boundary")
+plt.xticks(np.linspace(0, np.pi/2, 10), labels=np.linspace(0, 90, 10))
+plt.ylabel('count')
+plt.title('Shells 1-2')
+
+plt.tight_layout()
+
+plt.savefig(plot_dir+'/'+exp_id+'_shells_1-2_histogram.png', dpi=300) ##edit filename here
+
+#cell type and id
 fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
 
 polys_low,polys_high=visualise.plot_binary_polys(C, R, cell_centres, np.where(cell_type=='cluster',1,0), 1)
