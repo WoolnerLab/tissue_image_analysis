@@ -122,11 +122,18 @@ def plot_cell_id(cell_centres):
     for i in range(len(cell_centres)):
         plt.text(cell_centres[i][0], cell_centres[i][1], str(i),fontsize= 5,color='k', horizontalalignment='center', verticalalignment='center')
 
-def plot_alignment_axis(cell_centres,alignment_axis):
+def plot_alignment_axis(cell_centres,alignment_axis,c='k'):
     for i in range(len(cell_centres)):
-            plt.quiver(cell_centres[i,0],cell_centres[i,1],np.cos(alignment_axis)[i],np.sin(alignment_axis)[i],facecolor = 'black',scale=110,width=0.002,headwidth=0.0,headlength=0.0,headaxislength=0.0)
-            plt.quiver(cell_centres[i,0],cell_centres[i,1],-np.cos(alignment_axis)[i],-np.sin(alignment_axis)[i],facecolor = 'black',scale=110,width=0.002,headwidth=0.0,headlength=0.0,headaxislength=0.0)
+            plt.quiver(cell_centres[i,0],cell_centres[i,1],np.cos(alignment_axis)[i],np.sin(alignment_axis)[i],facecolor = c,scale=110,width=0.002,headwidth=0.0,headlength=0.0,headaxislength=0.0)
+            plt.quiver(cell_centres[i,0],cell_centres[i,1],-np.cos(alignment_axis)[i],-np.sin(alignment_axis)[i],facecolor = c,scale=110,width=0.002,headwidth=0.0,headlength=0.0,headaxislength=0.0)
 
+def plot_edges(A, R, c='k'):
+    N_e=np.shape(A)[0]
+    beg_edge = ((abs(A) - A)*0.5)@R
+    end_edge = ((abs(A) + A)*0.5)@R
+    for j in range(0,N_e):
+        if (beg_edge[j,0]!=0) and (end_edge[j, 0]!=0):
+            plt.plot([beg_edge[j,0],end_edge[j,0]],[beg_edge[j,1],end_edge[j,1]],c,alpha=1.0,linestyle ='-')
 
 
 def plot_polys(C, R, cell_centres):
