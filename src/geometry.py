@@ -147,7 +147,7 @@ def get_shape_axis_angle(S):
     long_axis_angle = np.arctan2(long_axis[:,1],long_axis[:,0])
     long_axis_angle=np.where(long_axis_angle<0, long_axis_angle+np.pi, long_axis_angle)
 
-    return long_axis_angle
+    return long_axis_angle, long_axis
 
 def get_edge_angle(tangent):
     edge_angle = np.arctan2(tangent[:,1],tangent[:,0])
