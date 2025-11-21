@@ -8,17 +8,8 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-from matplotlib import cm
 
-import imageio as iio
-from skan.csr import skeleton_to_csgraph, make_degree_image, pixel_graph
-from skan import Skeleton, summarize, draw
-import skimage.morphology as sk
-from scipy.sparse import csr_matrix
-from scipy.sparse.csgraph import minimum_spanning_tree
 from scipy.spatial.distance import cdist
-
 from glob import glob
 from datetime import datetime
 
@@ -26,13 +17,11 @@ from datetime import datetime
 from src import trace_processing
 from src import cluster_analysis
 from src import geometry
-from src import mechanics
 from src import fileio
 from src import visualise
 
 CURRENT_DIR = os.getcwd()
 input_dir=CURRENT_DIR+'/Input/'
-input_dir="/home/ncowley/Documents/Work/Kras/1-3cells away/20250828_KrasV12/"
 
 if os.path.exists(CURRENT_DIR+'/Output/')==False: os.mkdir(CURRENT_DIR+'/Output/')
 output_dir=CURRENT_DIR+'/Output/'
@@ -41,12 +30,11 @@ output_dir=CURRENT_DIR+'/Output/'
 #User Input
 #########################
 
-###Put trace file and boundary file in input folder
+###Put trace file and cluster file in input folder
 
-trace_name='20250828_2_YJ_BFPCAAX-mCheHis-A4-KrasV12_MP_seg_cp_trace.tif'  #Important that 1st part is date, 2nd part is experiment number that day, 3rd part is initials
+trace_name='20250828_4_YJ_BFPCAAX-mCheHis-A4-KrasV12_MP_seg_cp_trace.tif'  #Important that 1st part is date, 2nd part is experiment number that day, 3rd part is initials
 exp_id=trace_name.split('_')[0]+'_'+trace_name.split('_')[1]+'_'+trace_name.split('_')[2]
 trace_file=sorted(glob(input_dir+trace_name))[0] #trace filename
-boundary_file=glob(input_dir+exp_id+'*_boundary.tif')[0] #boundary filename (make sure it ends 'boundary' )
 cluster_file=glob(input_dir+exp_id+'*_cluster.tif')[0] #cluster filename (make sure it ends 'cluster' )
 print(exp_id)
 
@@ -84,7 +72,7 @@ cell_centres=geometry.get_cell_centres(C,R,cell_edge_count)
 cluster_cells=cluster_analysis.identify_cluster_cells(cluster_file, cell_centres)
 
 #remove external cells and map cell ids
-R, A, B, C, cells, edge_verts, cell_edges, cluster_cells=cluster_analysis.process_traced_cells(R,A,B,C,cells,edge_verts, cell_edges, cluster_cells)
+R, A, B, C, cells, edge_verts, cell_edges, cluster_cells, inv_edge_map=cluster_analysis.process_traced_cells(R,A,B,C,cells,edge_verts, cell_edges, cluster_cells)
 
 fileio.write_matrices(matrix_dir,A, B, C,R, exp_id, 1)
 fileio.write_cell_data(trace_dir,edge_verts, cell_edges, cells, exp_id, 1)
@@ -106,7 +94,7 @@ wild_cells=np.array(list(set(cell_id).difference(cluster_cells)))
 # Process boundary file
 #################################
 #extract boundary pixels from image and order them in order to fit a spline.
-ordered_paths, ordered_cycles=cluster_analysis.process_boundary(boundary_file)
+ordered_paths, ordered_cycles=cluster_analysis.process_boundary(trace_file, boundary_edges, inv_edge_map)
 path_pts, cycle_pts, all_pts, all_der=cluster_analysis.fit_spline(ordered_paths, ordered_cycles)
 
 #########################
@@ -207,7 +195,7 @@ ax.tick_params(axis='y',which='both',left=False,right=False,labelleft=False)
 ax.set_xlim(min(R[:,0]-10), max(R[:,0]+10)) #if no edditional elements polygons won't show without manual setting of axes
 ax.set_ylim(min(R[:,1]-10), max(R[:,1]+10))
 visualise.plot_alignment_axis(cell_centres[plot_cells],long_axis_angle[plot_cells], c='k')
-visualise.plot_edges(A[boundary_edges],R, c='k')
+#visualise.plot_edges(A[boundary_edges],R, c='k')
 for i in range(len(path_pts)):
     plt.plot(path_pts[i][0]*(micron_size/pixel_size), path_pts[i][1]*(micron_size/pixel_size), c='r')
 

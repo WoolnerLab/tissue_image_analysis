@@ -1,23 +1,19 @@
-from glob import glob
-import pandas as pd
 import imageio as iio
-import matplotlib.pyplot as plt
 import numpy as np
-import itertools
 from skan.csr import skeleton_to_csgraph
-from skan import Skeleton, summarize
+from skan import Skeleton
 import skimage.morphology as sk
 from scipy.spatial.distance import cdist
 from scipy.spatial import ConvexHull
 from scipy.interpolate import splprep,splev,RBFInterpolator
 import networkx as nx
 from skimage import io, measure
-import os
 from shapely.geometry import Point, Polygon
 import sys
 sys.path.insert(0, "..")
 
 from src import geometry
+from src import trace_processing
 
 
 def identify_cluster_cells(cluster_file, cell_centres):
@@ -65,8 +61,8 @@ def process_traced_cells(R,A,B,C,cells,edge_verts, cell_edges, cluster_cells):
     cell_edges=[[edge_map[e[0]] for e in cell_edges[i]] for i in interior_cells] 
     edge_verts=np.array([[vert_map[v] for v in edge_verts[j]] for j in interior_edges])
     cluster_cells=np.array([cell_map[c] for c in cluster_cells])
-
-    return R, A, B, C, cells, edge_verts, cell_edges, cluster_cells
+    inv_edge_map = {v: k for k, v in edge_map.items()}
+    return R, A, B, C, cells, edge_verts, cell_edges, cluster_cells, inv_edge_map
 
 
 
@@ -137,18 +133,23 @@ def get_boundary_shells(B,shell_matrix,cluster_cells, wild_out_ch_cells,boundary
         boundary_shells[shells[i]]=i 
     return boundary_shells
 
-def process_boundary(boundary_file):
-        #read boundary file
-    imageb = iio.v2.imread(boundary_file)
-    skel_b = sk.skeletonize(imageb, method='lee')
-    b_pixel_graph, b_coordinates = skeleton_to_csgraph(skel_b)
-    branch_data = summarize(Skeleton(skel_b), separator='_')
-    boundary_coords=np.flip(np.vstack(b_coordinates).T, axis=1)
+def process_boundary(trace_file, boundary_edges, inv_edge_map):
+
+    #using the boundary edge indices find full pixel edges
+    im,data=trace_processing.skeletonise(trace_file)
+    pixel_graph, coordinates=skeleton_to_csgraph(im) #get coordinates from skeleton
+    coords=np.flip(np.vstack(coordinates).T, axis=1)
+
+    skeleton=Skeleton(im)
+    p_list=skeleton.paths_list()
+
+    be_old_inds=[inv_edge_map[j] for j in boundary_edges] #map the boundary edge indices back to their original values
+    boundary_pix=[p_list[e] for e in be_old_inds]
+    boundary_pix_flat=np.unique([x for xs in boundary_pix for x in xs])
+    boundary_coords=coords[boundary_pix_flat]
+    boundary_graph=nx.Graph(pixel_graph[boundary_pix_flat][:,boundary_pix_flat])
 
     #find connected parts of boundary trace and order pixels
-
-    boundary_graph=nx.Graph(b_pixel_graph)
-
     S_boundary = [boundary_graph.subgraph(c).copy() for c in nx.connected_components(boundary_graph)]
 
     deg_1_nodes=[[node for node, degree in cc.degree if degree == 1] for cc in S_boundary]
